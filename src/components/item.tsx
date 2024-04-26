@@ -28,7 +28,7 @@ function ItemCover({ src, alt, className, onClick }: { src: string; alt: string,
                 />
             </div>
             <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-100 cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 h-8 text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-8 h-8 text-white">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                 </svg>
             </div>
@@ -83,7 +83,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                                 {item.data.title}
                             </ItemTitle>
                             <p className="text-muted-foreground md:text-sm text-xs ">
-                                {item.data.authors.join(", ")} 著
+                                {item.data.authors.join(", ")}
                             </p>
                             {item.data.translators.length > 0 && (<p className="text-muted-foreground text-xs md:text-sm">
                                 {item.data.translators.join(", ")} 译
@@ -109,10 +109,10 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                                     <span className="font-medium">ISBN: </span>
                                     <span className="select-all ml-1">{item.data.isbn}</span>
                                 </div>
-                                {item.data.edition?.length && (<div>
+                                {item.data.edition?.length ? (<div>
                                     <span className="font-medium">版次: </span>
                                     {item.data.edition}
-                                </div>)}
+                                </div>) : null}
                             </div>
                         </div>
                     </div>

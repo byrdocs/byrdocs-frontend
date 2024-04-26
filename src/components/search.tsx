@@ -6,66 +6,26 @@ import { toast } from "sonner"
 import { Item } from "@/types"
 import { ItemDisplay } from "./item"
 import { useLocation, useNavigate } from "react-router-dom"
-
-let testData: Item[] = [
-    {
-        type: "book",
-        data: {
-            title: "Modern JavaScript",
-            authors: "Peter Norton/Alex Samuel/David Aitel/Eric Foster-Johnson/Leonard Richardson/Jason Diamond/Aleatha Parker/Michael Roberts".split('/'),
-            translators: ["Xiao Li", "Wang Wu"],
-            edition: "3rd Edition",
-            publisher: "Tech Books Publishing",
-            isbn: "978-3-16-148410-0",
-            filetype: "PDF",
-            md5: "9e107d9d372bb6826bd81d3542a419d6",
-        },
-    },
-    {
-        type: "test",
-        data: {
-            title: "Advanced Calculus Exam",
-            college: "University of Example",
-            course: {
-                type: "本科",
-                name: "Advanced Calculus",
-            },
-            filetype: "DOCX",
-            stage: "期末",
-            content: "试题+答案",
-            md5: "da4b9237bacccdf19c0760cab7aec4a8",
-        },
-    },
-    {
-        type: "doc",
-        data: {
-            title: "Operating Systems Slides",
-            filetype: "PPT",
-            md5: "77de68daecd823babbb58edb1c8e14d7106e83bb",
-            course: {
-                type: "研究生",
-                name: "Operating Systems",
-            },
-            content: ["课件", "知识点"],
-        },
-    }
-]
-
-testData = testData.concat(testData)
+import Fuse from 'fuse.js'
 
 export function Search() {
     const location = useLocation()
-    
+    const query = new URLSearchParams(location.search)
+    const q = query.get("q") || ""
     const [top, setTop] = useState(false)
     const input = useRef<HTMLInputElement>(null)
-    const [showClear, setShowClear] = useState(false)
+    const [showClear, setShowClear] = useState(q !== "")
     const showedTip = useRef(false)
-    const [active, setActive] = useState(1)
+    const [active, setActive] = useState(query.get("c") ? parseInt(query.get("c") || "1") : 1)
     const [inputFixed, setInputFixed] = useState(false)
     const relative = useRef<HTMLDivElement>(null)
     const navigate = useNavigate()
     const lastSearch = useRef<number>(0)
     const lastSearchTimer = useRef<number>(0)
+    const docsData = useRef<Item[]>([])
+    const categoriesData = useRef<Record<string, Item[]>>({})
+    const [searchResult, setSearchResult] = useState<Item[]>([])
+    const [searchEmpty, setSearchEmpty] = useState(false)
 
     function reset() {
         setTop(false)
@@ -73,6 +33,18 @@ export function Search() {
         input.current?.focus()
         setShowClear(false)
         navigate("/")
+    }
+
+    function updateCategories() {
+        const categories: Record<string, Item[]> = {}
+        docsData.current.forEach(item => {
+            if (!categories[item.type]) {
+                categories[item.type] = []
+            }
+            categories[item.type].push(item)
+        })
+        categoriesData.current = categories
+    
     }
 
     useEffect(() => {
@@ -83,7 +55,8 @@ export function Search() {
                 input.current?.focus()
             } else {
                 if (showedTip.current) return
-                if (e.key.length !== 1) return
+                if (e.key.length !== 1 || e.altKey || e.ctrlKey || e.metaKey) return
+                console.log(e)
                 toast("按 / 即可跳到搜索框", {
                     action: {
                         label: "OK",
@@ -101,11 +74,80 @@ export function Search() {
         }
         document.addEventListener("keydown", handleKeyDown)
         window.addEventListener("scroll", handleScroll)
+        docsData.current = JSON.parse(localStorage.getItem("metadata") || "[]")
+        updateCategories()
+
+        if (q) {
+            if (!top) {
+                setTop(true)
+            }
+            search(active)
+        }
+
+        fetch("https://files.byrdocs.org/metadata.json")
+            .then(res => res.json())
+            .then((_data: Item[]) => {
+                const data = _data.map(item => {
+                    if (item.type === 'book') {
+                        item.data._isbn = item.data.isbn.replace(/-/g, "")
+                    }
+                    return item
+                })
+                updateCategories()
+
+                docsData.current = data
+                localStorage.setItem("metadata", JSON.stringify(data))
+
+                if (q) {
+                    if (!top) {
+                        setTop(true)
+                    }
+                    search(active)
+                }
+            })
         return () => {
             document.removeEventListener("keydown", handleKeyDown)
             window.removeEventListener("scroll", handleScroll)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    function search(active: number = 1) {
+        setSearchEmpty(false)
+        const search = active === 1 ? docsData.current : categoriesData.current[active === 2 ? "book" : active === 3 ? "test" : "doc"]
+        const fuse = new Fuse(search, {
+            keys: ["data.title", "data.authors", "data.translators", "data.publisher", "data.isbn",
+                "data.edition", "data.course.name", "data.course.type", "data.stage", "data.content",
+                "data.md5" ],
+            ignoreLocation: true,
+            useExtendedSearch: true,
+            threshold: 0.4,
+        })
+        if (!input.current) return
+        if (!input.current.value) {
+            setSearchResult([])
+            return
+        }
+        const q = input.current.value
+        const result = fuse.search(q)
+        if (result.length === 0) {
+            setSearchEmpty(true)
+        }
+        setSearchResult(result.map(item => item.item))
+    }
+
+    function searchActive(active: number) {
+        const q = new URLSearchParams(location.search)
+        if (active === 1) {
+            q.delete("c")
+        } else {
+            q.set("c", active.toString())
+        }
+        navigate("/?" + q.toString())
+        setActive(active)
+        search(active)
+    }
+
 
     return (
         <>
@@ -157,15 +199,18 @@ export function Search() {
                                 </div>
                                 <Input
                                     className={cn(
-                                        "pl-12 h-12 md:h-14 text-lg hover:shadow-lg shadow-md focus-visible:ring-0",
+                                        "pl-12 h-12 md:h-14 text-lg hover:shadow-lg shadow-md focus-visible:ring-0 dark:ring-1",
                                         {
                                             "pr-12": showClear,
                                         }
                                     )}
+                                    defaultValue={q}
                                     placeholder="搜索书籍、试题和资料..."
                                     onInput={() => {
                                         setTop(true)
                                         setShowClear(!!input.current?.value)
+                                        search()
+
                                         if (lastSearchTimer.current && new Date().getTime() - lastSearch.current < 500) {
                                             clearTimeout(lastSearchTimer.current)
                                         }
@@ -192,6 +237,8 @@ export function Search() {
                                         input.current?.value && (input.current.value = "")
                                         input.current?.focus()
                                         setShowClear(false)
+                                        setSearchEmpty(false)
+                                        setSearchResult([])
                                     }}>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -207,17 +254,24 @@ export function Search() {
                 <>
                     <div className="w-full left-0 border-b-[0.5px] border-muted-foreground pb-0 mx-auto">
                         <div className="flex justify-center space-x-4 md:space-x-8 mt-6 text-2xl font-light">
-                            <TabItem label="全部" active={active == 1} onClick={() => setActive(1)} />
-                            <TabItem label="书籍" active={active == 2} onClick={() => setActive(2)} />
-                            <TabItem label="试题" active={active == 3} onClick={() => setActive(3)} />
-                            <TabItem label="资料" active={active == 4} onClick={() => setActive(4)} />
+                            <TabItem label="全部" active={active == 1} onClick={() => searchActive(1)} />
+                            <TabItem label="书籍" active={active == 2} onClick={() => searchActive(2)} />
+                            <TabItem label="试题" active={active == 3} onClick={() => searchActive(3)} />
+                            <TabItem label="资料" active={active == 4} onClick={() => searchActive(4)} />
                         </div>
                     </div>
                     <div className="mt-6 space-y-3 md:w-[800px] w-full md:m-auto p-0 md:p-5">
-                        {testData.map((item, index) => (
+                        {searchResult.map((item, index) => (
                             <ItemDisplay key={index} item={item} />
                         ))}
                     </div>
+                    {searchResult.length == 0 ? (
+                        <div className="text-center mt-6 text-muted-foreground h-[calc(100vh-320px)] flex">
+                            <div className="text-lg sm:text-2xl font-light m-auto">
+                                {searchEmpty ? "没有找到相关结果，试试其他关键词吧" : "搜索书籍、试题和资料"}
+                            </div>
+                        </div>
+                    ) : null}
                 </>
             )}
         </>

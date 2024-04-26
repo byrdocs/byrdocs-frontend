@@ -17,6 +17,7 @@ export type Book = {
     edition?: string,
     publisher: string,
     isbn: string,
+    _isbn: string,
     filetype: string,
     md5: string,
 }
