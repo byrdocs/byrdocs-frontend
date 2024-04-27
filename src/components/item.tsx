@@ -217,14 +217,14 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                 setProgress(receivedLength / parseInt(contentLength));
             }
         }
-        setProgress(undefined);
-        downloading.current = false;
         const blob = new Blob(chunks);
         const urlObject = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = urlObject;
         a.download = item.data.title + "." + item.data.filetype;
         a.click();
+        setProgress(undefined);
+        downloading.current = false;
     }
 
     function cancelDownload() {
