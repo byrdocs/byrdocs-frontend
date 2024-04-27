@@ -90,7 +90,6 @@ export function Search() {
                     if (item.type === 'book') {
                         item.data._isbn = item.data.isbn.replace(/-/g, "")
                     }
-                    item.data.filesize = 12432442
                     return item
                 })
                 updateCategories()
