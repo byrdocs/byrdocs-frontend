@@ -142,7 +142,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                             <div className="space-x-1 -my-[1px] md:mt-2">
                                 <ItemBadge variant={"default"}>试题</ItemBadge>
                                 <ItemBadge>{item.data.filetype}</ItemBadge>
-                                <ItemBadge>{item.data.college}</ItemBadge>
+                                {item.data.college ?<ItemBadge>{item.data.college}</ItemBadge>:null}
                             </div>
                         </div>
                         <div className="text-xs md:text-sm md:space-y-1">
