@@ -209,7 +209,7 @@ export function Search() {
                                     onInput={() => {
                                         setTop(true)
                                         setShowClear(!!input.current?.value)
-                                        search()
+                                        search(active)
 
                                         if (lastSearchTimer.current && new Date().getTime() - lastSearch.current < 500) {
                                             clearTimeout(lastSearchTimer.current)
