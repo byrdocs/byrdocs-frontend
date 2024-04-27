@@ -56,7 +56,6 @@ export function Search() {
             } else {
                 if (showedTip.current) return
                 if (e.key.length !== 1 || e.altKey || e.ctrlKey || e.metaKey) return
-                console.log(e)
                 toast("按 / 即可跳到搜索框", {
                     action: {
                         label: "OK",
@@ -91,6 +90,7 @@ export function Search() {
                     if (item.type === 'book') {
                         item.data._isbn = item.data.isbn.replace(/-/g, "")
                     }
+                    item.data.filesize = 12432442
                     return item
                 })
                 updateCategories()

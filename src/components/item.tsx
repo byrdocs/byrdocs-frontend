@@ -11,11 +11,29 @@ import {
     Dialog,
     DialogContent
 } from "@/components/ui/dialog"
+import { toast } from "sonner";
 
 
-function ItemCard({ children }: { children: React.ReactNode }) {
+function ItemCard({ children, progress, onCancel }: { children: React.ReactNode, progress?: number, onCancel?: () => void }) {
+
     return (
         <Card className="w-full rounded-none md:rounded-lg shadow-sm md:hover:shadow-md transition-shadow overflow-hidden relative group/card">
+            {progress ? (
+                <>
+                    <div className="h-[5px] left-[150px] hidden md:block absolute bg-primary" style={{
+                        width: `calc(${progress} * (100% - 150px))`
+                    }}>
+                    </div>
+                    <div className="h-[5px] left-[112.5px] block md:hidden absolute bg-primary " style={{
+                        width: `calc(${progress} * (100% - 112.5px))`
+                    }}></div>
+                    <div className=" absolute right-0 top-[5px] italic text-muted-foreground bg-muted px-1 rounded-l-md shadow-sm font-mono text-sm md:text-md">
+                        {(progress * 100).toFixed(1)}%
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="ml-1 mb-[1px] w-5 h-5 inline-block cursor-pointer" onClick={onCancel}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                </>) : null}
             <div className="grid grid-cols-[112.5px_1fr] md:grid-cols-[150px_1fr] gap-2 md:gap-6 min-h-[150px] md:min-h-[200px]">
                 {children}
             </div>
@@ -134,29 +152,91 @@ function ExternalLink() {
     )
 }
 
-export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
-    function download(item: Item) {
-        const link = document.createElement("a");
-        link.href = `/files/${item.type}s/${item.data.md5}.${item.data.filetype}`;
-        link.download = `${item.data.title}.${item.data.filetype}`;
-        console.log(link.download)
-        link.click();
+function formatFileSize(size: number) {
+    if (size < 1024) {
+        return size + " B";
+    } else if (size < 1024 * 1024) {
+        return (size / 1024).toFixed(2) + " KB";
+    } else if (size < 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024).toFixed(2) + " MB";
+    } else {
+        return (size / 1024 / 1024 / 1024).toFixed(2) + " GB";
     }
+}   
+
+export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
 
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogImage, setDialogImage] = useState("");
+    const [progress, setProgress] = useState<number | undefined>(undefined);
+    const downloading = useRef(false);
 
     function openDialog(image: string) {
         setDialogImage(image);
         setIsDialogOpen(true);
     }
 
+    useEffect(() => {
+        return () => {
+            if (downloading.current) {
+                toast("下载已取消")
+                downloading.current = false;
+            }
+        }
+    }, [])
+
+    async function download(item: Item) {
+        if (downloading.current) {
+            return;
+        }
+        downloading.current = true;
+        const url = `/files/${item.type}s/${item.data.md5}.${item.data.filetype}`;
+        const response = await fetch(url);
+        const contentLength = response.headers.get('content-length');
+        const reader = response.body?.getReader();
+        if (!reader) {
+            toast("下载失败，请点击“预览”直接下载", { 
+                action: {
+                    label: "OK",
+                    onClick: () => {},
+                },
+            });
+            return
+        }
+        let receivedLength = 0;
+        const chunks: Uint8Array[] = [];
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
+            const { done, value } = await reader.read();
+            if (!downloading.current) return
+            if (done) break;
+            chunks.push(value);
+            receivedLength += value?.length || 0;
+            if (contentLength) {
+                setProgress(receivedLength / parseInt(contentLength));
+            }
+        }
+        setProgress(undefined);
+        downloading.current = false;
+        const blob = new Blob(chunks);
+        const urlObject = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = urlObject;
+        a.download = item.data.title + "." + item.data.filetype;
+        a.click();
+    }
+
+    function cancelDownload() {
+        downloading.current = false;
+        setProgress(undefined);
+    }
+
     return (
         <>
             {item.type == "book" ?
                 (
-                    <ItemCard>
+                    <ItemCard progress={progress} onCancel={cancelDownload}>
                         <ItemCover
                             src={`/files/covers/${item.data.md5}.webp`}
                             alt="书籍封面"
@@ -188,6 +268,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                                 <div className="space-x-1 -my-[1px] md:mt-2">
                                     <ItemBadge variant={"default"}>书籍</ItemBadge>
                                     <ItemBadge>{item.data.filetype}</ItemBadge>
+                                    {item.data.filesize ? <ItemBadge>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
                                 </div>
                             </div>
                             <div className="text-xs md:text-sm md:space-y-1">
@@ -219,7 +300,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                 :
                 item.type == "test" ?
                     (
-                        <ItemCard>
+                        <ItemCard progress={progress} onCancel={cancelDownload}>
                             <ItemCover
                                 src={`/files/covers/${item.data.md5}.webp`}
                                 alt="试题封面"
@@ -245,6 +326,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                                         <ItemBadge variant={"default"} color="green">试题</ItemBadge>
                                         <ItemBadge>{item.data.filetype}</ItemBadge>
                                         {item.data.college ? <ItemBadge>{item.data.college}</ItemBadge> : null}
+                                        {item.data.filesize ? <ItemBadge>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
                                     </div>
                                 </div>
                                 <div className="text-xs md:text-sm md:space-y-1">
@@ -263,7 +345,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
 
                     item.type == "doc" ?
                         (
-                            <ItemCard>
+                            <ItemCard progress={progress} onCancel={cancelDownload}>
                                 <ItemCover
                                     src={`/files/covers/${item.data.md5}.webp`}
                                     alt="资料封面"
@@ -287,6 +369,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                                     <div className="space-x-1 md:mt-2">
                                         <ItemBadge variant={"default"} color="orange">资料</ItemBadge>
                                         <ItemBadge>{item.data.filetype}</ItemBadge>
+                                        {item.data.filesize ? <ItemBadge>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
                                     </div>
                                     <div className="text-xs md:text-sm md:space-y-1">
                                         <div>
@@ -299,7 +382,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                         ) :
                         (<div>Unsupported item type</div>)
             }
-            <Dialog open={isDialogOpen} onOpenChange={(isOpen) => setIsDialogOpen(isOpen)}>
+            <Dialog open={isDialogOpen} onOpenChange={(isOpen: boolean) => setIsDialogOpen(isOpen)}>
                 <DialogContent className="p-0 overflow-hidden">
                     <img
                         src={dialogImage}
