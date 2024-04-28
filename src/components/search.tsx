@@ -267,7 +267,12 @@ export function Search() {
                     {searchResult.length == 0 ? (
                         <div className="text-center mt-6 text-muted-foreground h-[calc(100vh-320px)] flex">
                             <div className="text-lg sm:text-2xl font-light m-auto">
-                                {searchEmpty ? "没有找到相关结果，试试其他关键词吧" : "搜索书籍、试题和资料"}
+                                {searchEmpty ? (
+                                    <div className="px-2">
+                                        <div className="mb-2">没有找到相关结果</div>
+                                        <div className="text-xs">注意使用全称搜索，例如“高等数学”而非“高数”</div>
+                                    </div>
+                                ) : "搜索书籍、试题和资料"}
                             </div>
                         </div>
                     ) : null}
