@@ -75,7 +75,7 @@ export function Search() {
         window.addEventListener("scroll", handleScroll)
         docsData.current = JSON.parse(localStorage.getItem("metadata") || "[]")
         
-        // input.current?.focus()
+        input.current?.focus()
 
         if (q && docsData.current.length) {
             if (!top) {
