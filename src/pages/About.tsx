@@ -17,18 +17,16 @@ export default function About() {
                 </div>
                 <div className="space-y-3 text-xl">
                     <li>
-                        <p>BYR Docs 是一个资料分享平台，旨在使北邮学生更方便地获取与北邮课程有关的教育资源，包括电子书籍、考试题目和复习资料等。</p>
+                        BYR Docs 是一个资料分享平台，旨在使北邮学生更方便地获取与北邮课程有关的教育资源，包括电子书籍、考试题目和复习资料等。
                     </li>
                     <li>
-                        <p>BYR Docs 是一个开源项目，你可以在 <A href="https://github.com/byrdocs" >GitHub</A> 上找到我们的代码和数据。</p>
+                        BYR Docs 是一个开源项目，你可以在 <A href="https://github.com/byrdocs" >GitHub</A> 上找到我们的代码和数据。
                     </li>
                     <li>
-                        <p>
-                            如果您有任何问题或建议、想要贡献资料或者加入我们，请发送邮件至
-                            <A href="mailto:contact@byrdocs.org" >contact@byrdocs.org</A>或在
-                            <A href="https://github.com/orgs/byrdocs/discussions">GitHub Discussions</A>
-                            留言。
-                        </p>
+                        如果您有任何问题或建议、想要贡献资料或者加入我们，请发送邮件至
+                        <A href="mailto:contact@byrdocs.org" >contact@byrdocs.org</A>或在
+                        <A href="https://github.com/orgs/byrdocs/discussions">GitHub Discussions</A>
+                        留言。
                     </li>
                 </div>
                 <div className="w-full mt-12 text-center text-blue-500 hover:text-blue-400">
