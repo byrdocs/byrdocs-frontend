@@ -44,7 +44,7 @@ export function Search() {
             categories[item.type].push(item)
         })
         categoriesData.current = categories
-    
+        
     }
 
     useEffect(() => {
@@ -74,12 +74,12 @@ export function Search() {
         document.addEventListener("keydown", handleKeyDown)
         window.addEventListener("scroll", handleScroll)
         docsData.current = JSON.parse(localStorage.getItem("metadata") || "[]")
-        updateCategories()
-
-        if (q) {
+        
+        if (q && docsData.current.length) {
             if (!top) {
                 setTop(true)
             }
+            updateCategories()
             search(active)
         }
 
@@ -92,9 +92,9 @@ export function Search() {
                     }
                     return item
                 })
-                updateCategories()
-
+                
                 docsData.current = data
+                updateCategories()
                 localStorage.setItem("metadata", JSON.stringify(data))
 
                 if (q) {
