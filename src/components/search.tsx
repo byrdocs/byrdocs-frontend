@@ -204,7 +204,7 @@ export function Search() {
                                         }
                                     )}
                                     defaultValue={q}
-                                    placeholder="搜索书籍、试题和资料..."
+                                    placeholder="搜索书籍、试卷和资料..."
                                     onInput={() => {
                                         setTop(true)
                                         setShowClear(!!input.current?.value)
@@ -255,7 +255,7 @@ export function Search() {
                         <div className="flex justify-center space-x-4 md:space-x-8 mt-6 text-2xl font-light">
                             <TabItem label="全部" active={active == 1} onClick={() => searchActive(1)} />
                             <TabItem label="书籍" active={active == 2} onClick={() => searchActive(2)} />
-                            <TabItem label="试题" active={active == 3} onClick={() => searchActive(3)} />
+                            <TabItem label="试卷" active={active == 3} onClick={() => searchActive(3)} />
                             <TabItem label="资料" active={active == 4} onClick={() => searchActive(4)} />
                         </div>
                     </div>
@@ -272,7 +272,7 @@ export function Search() {
                                         <div className="mb-2">没有找到相关结果</div>
                                         <div className="text-xs">注意使用全称搜索，例如“高等数学”而非“高数”</div>
                                     </div>
-                                ) : "搜索书籍、试题和资料"}
+                                ) : "搜索书籍、试卷和资料"}
                             </div>
                         </div>
                     ) : null}

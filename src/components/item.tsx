@@ -303,7 +303,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                         <ItemCard progress={progress} onCancel={cancelDownload}>
                             <ItemCover
                                 src={`/files/covers/${item.data.md5}.webp`}
-                                alt="试题封面"
+                                alt="试卷封面"
                                 onClick={() => {
                                     openDialog(`/files/covers/${item.data.md5}.jpg`);
                                 }}
@@ -323,7 +323,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                                         {item.data.course.name} {item.data.course.type ? '(' + item.data.course.type + ')' : ''}
                                     </p>
                                     <div className="space-x-1 -my-[1px] md:mt-2">
-                                        <ItemBadge variant={"default"} color="green">试题</ItemBadge>
+                                        <ItemBadge variant={"default"} color="green">试卷</ItemBadge>
                                         <ItemBadge>{item.data.filetype}</ItemBadge>
                                         {item.data.college ? <ItemBadge>{item.data.college}</ItemBadge> : null}
                                         {item.data.filesize ? <ItemBadge>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
