@@ -142,17 +142,6 @@ function ItemBadge({ children, variant = "secondary", color }: { children: React
     );
 }
 
-function ExternalLink() {
-    return (
-        <>
-            <span className="text-muted-foreground font-light text-[10px] md:text-sm mr-[1px] select-none">预览</span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-2 h-2 md:w-3 md:h-3 inline-block text-muted-foreground">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-            </svg>
-        </>
-    )
-}
-
 function formatFileSize(size: number) {
     if (size < 1024) {
         return size + " B";
@@ -163,7 +152,7 @@ function formatFileSize(size: number) {
     } else {
         return (size / 1024 / 1024 / 1024).toFixed(2) + " GB";
     }
-}   
+}
 
 export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
 
