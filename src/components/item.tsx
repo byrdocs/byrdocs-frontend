@@ -112,14 +112,15 @@ function ItemCover({ src, alt, className, onClick }: { src: string; alt: string,
     );
 }
 
-function ItemTitle({ children, onClick, href }: { children: React.ReactNode, onClick?: () => void, href?: string }) {
+function ItemTitle({ children, filename, href }: { children: React.ReactNode, filename: string, href: string }) {
     return (
         <h3 className="md:text-2xl font-bold mb-1">
-            <span className="underline-offset-2 hover:underline cursor-pointer" onClick={onClick}>
+            <a
+                className="underline-offset-2 hover:underline cursor-pointer"
+                href={href}
+                download={filename}
+            >
                 {children}
-            </span>
-            <a className="md:opacity-0 group-hover/card:opacity-100 transition-opacity duration-100 inline-block ml-2 cursor-pointer" href={href} target="_blank">
-                <ExternalLink />
             </a>
         </h3>
     );
@@ -169,7 +170,6 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogImage, setDialogImage] = useState("");
-    const [progress, setProgress] = useState<number | undefined>(undefined);
     const downloading = useRef(false);
 
     function openDialog(image: string) {
@@ -186,57 +186,11 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
         }
     }, [])
 
-    async function download(item: Item) {
-        if (downloading.current) {
-            return;
-        }
-        downloading.current = true;
-        const url = `/files/${item.type}s/${item.data.md5}.${item.data.filetype}`;
-        const response = await fetch(url);
-        const contentLength = response.headers.get('content-length');
-        const reader = response.body?.getReader();
-        if (!reader) {
-            toast("下载失败，请点击“预览”直接下载", { 
-                action: {
-                    label: "OK",
-                    onClick: () => {},
-                },
-            });
-            return
-        }
-        let receivedLength = 0;
-        const chunks: Uint8Array[] = [];
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-            const { done, value } = await reader.read();
-            if (!downloading.current) return
-            if (done) break;
-            chunks.push(value);
-            receivedLength += value?.length || 0;
-            if (contentLength) {
-                setProgress(receivedLength / parseInt(contentLength));
-            }
-        }
-        const blob = new Blob(chunks);
-        const urlObject = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = urlObject;
-        a.download = item.data.title + "." + item.data.filetype;
-        a.click();
-        setProgress(undefined);
-        downloading.current = false;
-    }
-
-    function cancelDownload() {
-        downloading.current = false;
-        setProgress(undefined);
-    }
-
     return (
         <>
             {item.type == "book" ?
                 (
-                    <ItemCard progress={progress} onCancel={cancelDownload}>
+                    <ItemCard>
                         <ItemCover
                             src={`/files/covers/${item.data.md5}.webp`}
                             alt="书籍封面"
@@ -252,9 +206,8 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                             }
                         )}>
                             <div>
-                                <ItemTitle onClick={() => {
-                                    download(item);
-                                }}
+                                <ItemTitle
+                                    filename={`${item.data.title}.${item.data.filetype}`}
                                     href={`/files/${item.type}s/${item.data.md5}.${item.data.filetype}`}
                                 >
                                     {item.data.title}
@@ -300,7 +253,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                 :
                 item.type == "test" ?
                     (
-                        <ItemCard progress={progress} onCancel={cancelDownload}>
+                        <ItemCard>
                             <ItemCover
                                 src={`/files/covers/${item.data.md5}.webp`}
                                 alt="试卷封面"
@@ -312,9 +265,8 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                                 "p-2 md:p-4 space-y-1 md:space-y-2",
                             )}>
                                 <div>
-                                    <ItemTitle onClick={() => {
-                                        download(item);
-                                    }}
+                                    <ItemTitle
+                                        filename={`${item.data.title}.${item.data.filetype}`}
                                         href={`/files/${item.type}s/${item.data.md5}.${item.data.filetype}`}
                                     >
                                         {item.data.title}
@@ -345,7 +297,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
 
                     item.type == "doc" ?
                         (
-                            <ItemCard progress={progress} onCancel={cancelDownload}>
+                            <ItemCard>
                                 <ItemCover
                                     src={`/files/covers/${item.data.md5}.webp`}
                                     alt="资料封面"
@@ -355,9 +307,8 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                                 />
                                 <div className="p-2 md:p-4 space-y-1 md:space-y-2">
                                     <div>
-                                        <ItemTitle onClick={() => {
-                                            download(item);
-                                        }}
+                                        <ItemTitle
+                                            filename={`${item.data.title}.${item.data.filetype}`}
                                             href={`/files/${item.type}s/${item.data.md5}.${item.data.filetype}`}
                                         >
                                             {item.data.title}
