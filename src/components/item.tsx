@@ -180,7 +180,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
     }, [])
 
     return (
-        <div className="min-h-[calc(100vh-296px)]">
+        <>
             {item.type == "book" ?
                 (
                     <ItemCard>
@@ -335,6 +335,6 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                     </img>
                 </DialogContent>
             </Dialog>
-        </div>
+        </>
     );
 };

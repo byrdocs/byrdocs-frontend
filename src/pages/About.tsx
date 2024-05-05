@@ -7,7 +7,7 @@ function A({ href, children }: { href: string, children: React.ReactNode }) {
     )
 }
 export default function About() {
-
+    const idx = history.state.idx || 0;
     return (
         <div className="md:w-[800px] w-full md:m-auto px-10 flex flex-col h-[100vh]">
             <div className="w-full m-auto h-98">
@@ -30,7 +30,10 @@ export default function About() {
                     </li>
                 </div>
                 <div className="w-full mt-12 text-center text-blue-500 hover:text-blue-400">
-                    <Link to="/">返回首页</Link>
+                    {idx ? 
+                        <Link onClick={() => history.go(-1)} to="/about">返回</Link> :
+                        <Link to="/">首页</Link>
+                    }
                 </div>
             </div>
         </div>

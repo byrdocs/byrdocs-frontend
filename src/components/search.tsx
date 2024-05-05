@@ -261,14 +261,14 @@ export function Search() {
                             <TabItem label="资料" active={active == 4} onClick={() => searchActive(4)} />
                         </div>
                     </div>
-                    <div className="mt-6 space-y-3 md:w-[800px] w-full md:m-auto p-0 md:p-5">
-                        {searchResult.map((item, index) => (
-                            <ItemDisplay key={index} item={item} />
-                        ))}
-                    </div>
-                    {searchResult.length == 0 ? (
-                        <div className="text-center mt-6 text-muted-foreground h-[calc(100vh-320px)] flex">
-                            <div className="text-lg sm:text-2xl font-light m-auto">
+                    {searchResult.length !== 0 ?
+                        (<div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:m-auto p-0 md:p-5">
+                            {searchResult.map((item, index) => (
+                                <ItemDisplay key={index} item={item} />
+                            ))}
+                        </div>) : (
+                        <div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
+                            <div className="text-lg sm:text-2xl font-light m-auto ">
                                 {searchEmpty ? (
                                     <div className="px-2">
                                         <div className="mb-2">没有找到相关结果</div>
@@ -277,7 +277,7 @@ export function Search() {
                                 ) : "搜索书籍、试卷和资料"}
                             </div>
                         </div>
-                    ) : null}
+                    )}
                 </>
             )}
         </>
