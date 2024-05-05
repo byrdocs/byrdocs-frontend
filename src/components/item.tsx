@@ -122,6 +122,7 @@ function ItemTitle({ children, filename, href }: { children: React.ReactNode, fi
                 className="underline-offset-2 hover:underline cursor-pointer"
                 href={href}
                 download={filename}
+                target="_blank"
             >
                 {children}
             </a>
