@@ -14,6 +14,9 @@ import {
 import { toast } from "sonner";
 
 
+const prefix = "https://byrdocs.org/files";
+const url = (type: string, md5: string, filetype: string) => `${prefix}/${type}s/${md5}.${filetype}`;
+
 function ItemCard({ children, progress, onCancel }: { children: React.ReactNode, progress?: number, onCancel?: () => void }) {
 
     return (
@@ -181,10 +184,10 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                 (
                     <ItemCard>
                         <ItemCover
-                            src={`/files/covers/${item.data.md5}.webp`}
+                            src={url("cover", item.data.md5, "webp")}
                             alt="书籍封面"
                             onClick={() => {
-                                openDialog(`/files/covers/${item.data.md5}.jpg`);
+                                openDialog(url("cover", item.data.md5, "jpg"));
                             }}
                         />
                         <div className={cn(
@@ -197,7 +200,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                             <div>
                                 <ItemTitle
                                     filename={`${item.data.title}.${item.data.filetype}`}
-                                    href={`/files/${item.type}s/${item.data.md5}.${item.data.filetype}`}
+                                    href={url(item.type, item.data.md5, item.data.filetype)}
                                 >
                                     {item.data.title}
                                 </ItemTitle>
@@ -244,10 +247,10 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                     (
                         <ItemCard>
                             <ItemCover
-                                src={`/files/covers/${item.data.md5}.webp`}
+                                src={url("cover", item.data.md5, "webp")}
                                 alt="试卷封面"
                                 onClick={() => {
-                                    openDialog(`/files/covers/${item.data.md5}.jpg`);
+                                    openDialog(url("cover", item.data.md5, "jpg"));
                                 }}
                             />
                             <div className={cn(
@@ -256,7 +259,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                                 <div>
                                     <ItemTitle
                                         filename={`${item.data.title}.${item.data.filetype}`}
-                                        href={`/files/${item.type}s/${item.data.md5}.${item.data.filetype}`}
+                                        href={url(item.type, item.data.md5, item.data.filetype)}
                                     >
                                         {item.data.title}
                                     </ItemTitle>
@@ -288,17 +291,17 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                         (
                             <ItemCard>
                                 <ItemCover
-                                    src={`/files/covers/${item.data.md5}.webp`}
+                                    src={url("cover", item.data.md5, "webp")}
                                     alt="资料封面"
                                     onClick={() => {
-                                        openDialog(`/files/covers/${item.data.md5}.jpg`);
+                                        openDialog(url("cover", item.data.md5, "jpg"));
                                     }}
                                 />
                                 <div className="p-2 md:p-4 space-y-1 md:space-y-2">
                                     <div>
                                         <ItemTitle
                                             filename={`${item.data.title}.${item.data.filetype}`}
-                                            href={`/files/${item.type}s/${item.data.md5}.${item.data.filetype}`}
+                                            href={url(item.type, item.data.md5, item.data.filetype)}
                                         >
                                             {item.data.title}
                                         </ItemTitle>
