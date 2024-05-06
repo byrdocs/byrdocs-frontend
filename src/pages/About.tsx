@@ -11,7 +11,6 @@ function BuildInfo() {
                     <span className="ml-1 text-secondary-foreground/50 group-hover:text-secondary-foreground">{import.meta.env.VITE_GIT_LAST_COMMIT_MESSAGE}</span>
                 </div>
                 <div>
-                    <span className="text-muted-foreground/50 group-hover:text-muted-foreground">{import.meta.env.VITE_GIT_BRANCH_NAME}/</span>
                     <a
                         href={"https://github.com/byrdocs/byrdocs-frontend/commit/" + import.meta.env.VITE_GIT_COMMIT_HASH}
                         className="text-blue-500/50 group-hover:text-blue-400" target="_blank">

@@ -4,12 +4,10 @@ import { defineConfig } from "vite"
 import { execSync } from "child_process";
 
 const commitDate = execSync('git log -1 --format=%cI').toString().trimEnd();
-const branchName = execSync('git branch --show-current').toString().trimEnd();
 const commitHash = execSync('git rev-parse HEAD').toString().trimEnd();
-const lastCommitMessage = execSync('git show -s --format=%s').toString().trimEnd();
+const lastCommitMessage = execSync('git show -s --format="%an: %s"').toString().trimEnd();
 
 process.env.VITE_GIT_COMMIT_DATE = commitDate;
-process.env.VITE_GIT_BRANCH_NAME = branchName;
 process.env.VITE_GIT_COMMIT_HASH = commitHash;
 process.env.VITE_GIT_LAST_COMMIT_MESSAGE = lastCommitMessage;
 
