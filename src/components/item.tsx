@@ -44,7 +44,7 @@ function ItemCard({ children, progress, onCancel }: { children: React.ReactNode,
     );
 }
 
-function ItemCover({ src, alt, className, onClick }: { src: string; alt: string, className?: string, onClick?: () => void }) {
+function ItemCover({ src, alt, index, className, onClick }: { index?: number, src: string; alt: string, className?: string, onClick?: () => void }) {
     const imgRef = useRef(null);
     const [isError, setIsError] = useState(false);
 
@@ -92,6 +92,41 @@ function ItemCover({ src, alt, className, onClick }: { src: string; alt: string,
                         (e.target as HTMLImageElement).src = "/placeholder.svg";
                         (e.target as HTMLImageElement).style.aspectRatio = "3/4";
                         setIsError(true);
+                        console.log(index)
+                        if (index === 0) {
+                            fetch(src, {
+                                redirect: "manual"
+                            })
+                                .then((res: Response) => {
+                                    if (res.type === 'opaqueredirect') {
+                                        if (location.origin === "https://byrdocs.org") {
+                                            toast("网络环境错误，请刷新以登录", {
+                                                description: "您当前的网络似乎不是北邮校园网，我们需要登录来认证您的身份",
+                                                duration: 100000,
+                                                dismissible: false,
+                                                action: {
+                                                    label: "登录",
+                                                    onClick: () => {
+                                                        location.reload();
+                                                    }
+                                                },
+                                            })
+                                        } else {
+                                            toast("网络环境错误", {
+                                                description: "您可以切换到校园网环境，或者访问正式版网站。",
+                                                duration: 100000,
+                                                dismissible: false,
+                                                action: {
+                                                    label: "跳转",
+                                                    onClick: () => {
+                                                        location.href = location.href.replace(location.origin, "https://byrdocs.org")
+                                                    }
+                                                },
+                                            })
+                                        }
+                                    }
+                                })
+                        }
                     }}
                     className={cn(
                         "object-cover transition-opacity duration-100 max-w-full max-h-full w-full my-auto " + className,
@@ -157,9 +192,7 @@ function formatFileSize(size: number) {
     }
 }
 
-export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
-
-
+export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, index }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogImage, setDialogImage] = useState("");
     const downloading = useRef(false);
@@ -184,6 +217,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                 (
                     <ItemCard>
                         <ItemCover
+                            index={index}
                             src={url("cover", item.data.md5, "webp")}
                             alt="书籍封面"
                             onClick={() => {
@@ -247,6 +281,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                     (
                         <ItemCard>
                             <ItemCover
+                                index={index}
                                 src={url("cover", item.data.md5, "webp")}
                                 alt="试卷封面"
                                 onClick={() => {
@@ -291,6 +326,7 @@ export const ItemDisplay: React.FC<{ item: Item }> = ({ item }) => {
                         (
                             <ItemCard>
                                 <ItemCover
+                                    index={index}
                                     src={url("cover", item.data.md5, "webp")}
                                     alt="资料封面"
                                     onClick={() => {

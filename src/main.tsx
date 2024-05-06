@@ -33,7 +33,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider defaultTheme="system">
       <RouterProvider router={router}/>
-      <Toaster />
+      <Toaster position="bottom-center" />
     </ThemeProvider>
   </React.StrictMode>,
 )

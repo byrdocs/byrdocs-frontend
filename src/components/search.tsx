@@ -264,7 +264,7 @@ export function Search() {
                     {searchResult.length !== 0 ?
                         (<div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:m-auto p-0 md:p-5">
                             {searchResult.map((item, index) => (
-                                <ItemDisplay key={index} item={item} />
+                                <ItemDisplay key={index} item={item} index={index} />
                             ))}
                         </div>) : (
                         <div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
