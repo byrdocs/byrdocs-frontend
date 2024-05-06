@@ -4,17 +4,14 @@ import { Link } from "react-router-dom";
 function BuildInfo() {
     const date = new Date(import.meta.env.VITE_GIT_COMMIT_DATE);
     return (
-        <footer className="mx-auto text-[8px] md:text-xs h-12">
-            <div className="text-muted-foreground mt-4 flex flex-col text-center w-[100vw] group md:space-y-1">
-                <div>
+        <footer className="mx-auto text-[8px] md:text-xs h-6">
+            <div className="text-muted-foreground mt-4 text-center w-[100vw] group">
+                <div className="space-x-1 px-6">
                     <span className="text-muted-foreground/50 group-hover:text-muted-foreground">{date.toLocaleString()}</span>
-                    <span className="ml-1 text-secondary-foreground/50 group-hover:text-secondary-foreground">{import.meta.env.VITE_GIT_LAST_COMMIT_MESSAGE}</span>
-                </div>
-                <div>
                     <a
                         href={"https://github.com/byrdocs/byrdocs-frontend/commit/" + import.meta.env.VITE_GIT_COMMIT_HASH}
                         className="text-blue-500/50 group-hover:text-blue-400" target="_blank">
-                        {import.meta.env.VITE_GIT_COMMIT_HASH}
+                        {import.meta.env.VITE_GIT_LAST_COMMIT_MESSAGE}
                     </a>
                 </div>
             </div>
@@ -33,7 +30,7 @@ export default function About() {
     const idx = history.state.idx || 0;
     return (
         <>
-            <div className="md:w-[800px] w-full md:m-auto px-10 flex flex-col min-h-[calc(100vh-64px)]">
+            <div className="md:w-[800px] w-full md:m-auto px-10 flex flex-col md:min-h-[calc(100vh-48px)] min-h-[calc(100vh-24px)]">
                 <div className="w-full m-auto h-98">
                     <div className="text-center my-12" style={{ lineHeight: 3 }}>
                         <span className="text-4xl sm:text-5xl md:text-6xl">关于</span>
