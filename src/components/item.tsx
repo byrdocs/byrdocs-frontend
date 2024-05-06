@@ -92,7 +92,6 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
                         (e.target as HTMLImageElement).src = "/placeholder.svg";
                         (e.target as HTMLImageElement).style.aspectRatio = "3/4";
                         setIsError(true);
-                        console.log(index)
                         if (index === 0) {
                             fetch(src, {
                                 redirect: "manual"
@@ -115,13 +114,16 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
                                             toast("网络环境错误", {
                                                 description: "您可以切换到校园网环境，或者访问正式版网站。",
                                                 duration: 100000,
-                                                dismissible: false,
                                                 action: {
                                                     label: "跳转",
                                                     onClick: () => {
                                                         location.href = location.href.replace(location.origin, "https://byrdocs.org")
                                                     }
                                                 },
+                                                cancel: {
+                                                    label: "关闭",
+                                                    onClick: () => {}
+                                                }
                                             })
                                         }
                                     }
