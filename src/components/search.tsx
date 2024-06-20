@@ -117,9 +117,7 @@ export function Search() {
         setSearchEmpty(false)
         const search = active === 1 ? docsData.current : categoriesData.current[active === 2 ? "book" : active === 3 ? "test" : "doc"]
         const fuse = new Fuse(search, {
-            keys: ["data.title", "data.authors", "data.translators", "data.publisher", "data.isbn",
-                "data.edition", "data.course.name", "data.course.type", "data.stage", "data.content",
-                "data.md5" ],
+            keys: ["data.title", "data.authors"],
             ignoreLocation: true,
             useExtendedSearch: false,
             threshold: 0.4,
