@@ -120,7 +120,7 @@ export function Search() {
             keys: ["data.title", "data.authors"],
             ignoreLocation: true,
             useExtendedSearch: false,
-            threshold: 0.4,
+            threshold: 0.2,
         })
         if (!input.current) return
         if (!input.current.value) {
