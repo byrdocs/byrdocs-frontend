@@ -121,7 +121,7 @@ export function Search() {
                 "data.edition", "data.course.name", "data.course.type", "data.stage", "data.content",
                 "data.md5" ],
             ignoreLocation: true,
-            useExtendedSearch: true,
+            useExtendedSearch: false,
             threshold: 0.4,
         })
         if (!input.current) return
