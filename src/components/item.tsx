@@ -48,35 +48,6 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
     const imgRef = useRef(null);
     const [isError, setIsError] = useState(false);
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img: HTMLImageElement = entry.target as HTMLImageElement;
-                        img.src = img.dataset.src as string;
-                        observer.unobserve(img);
-                    }
-                });
-            },
-            {
-                rootMargin: '50px',
-                threshold: 0.01
-            }
-        );
-
-        const imgElement = imgRef.current;
-        if (imgElement) {
-            observer.observe(imgElement);
-        }
-
-        return () => {
-            if (imgElement) {
-                observer.unobserve(imgElement);
-            }
-        };
-    }, [src]);
-
     return (
         <div className="relative group h-full my-auto" onClick={() => {
             if (!isError && onClick) {
@@ -87,7 +58,8 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
                 <img
                     alt={alt}
                     ref={imgRef}
-                    data-src={src}
+                    loading="lazy"
+                    src={src}
                     onError={(e) => {
                         (e.target as HTMLImageElement).src = "/placeholder.svg";
                         (e.target as HTMLImageElement).style.aspectRatio = "3/4";
