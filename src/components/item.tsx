@@ -52,6 +52,7 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
             alt={alt}
             loading="lazy"
             src={src}
+         />
          </>)
     return (
         <div className="relative group h-full my-auto" onClick={() => {
