@@ -45,9 +45,10 @@ export default function About() {
                         </li>
                         <li>
                             如果您有任何问题或建议、想要贡献资料或者加入我们，请发送邮件至
-                            <A href="mailto:contact@byrdocs.org" >contact@byrdocs.org</A>或在
+                            <A href="mailto:contact@byrdocs.org" >contact@byrdocs.org</A>、在
                             <A href="https://github.com/orgs/byrdocs/discussions">GitHub Discussions</A>
-                            留言。
+                            留言或者加入我们的
+                            <A href="https://qm.qq.com/q/sxv5SAKP0A" >QQ 群</A>。
                         </li>
                     </div>
                     <div className="w-full mt-12 text-center text-blue-500 hover:text-blue-400">
