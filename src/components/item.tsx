@@ -45,7 +45,6 @@ function ItemCard({ children, progress, onCancel }: { children: React.ReactNode,
 }
 
 function ItemCover({ src, alt, index, className, onClick }: { index?: number, src: string; alt: string, className?: string, onClick?: () => void }) {
-    const imgRef = useRef(null);
     const [isError, setIsError] = useState(false);
 
     return (
@@ -57,7 +56,6 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
             <div className="h-full flex">
                 <img
                     alt={alt}
-                    ref={imgRef}
                     loading="lazy"
                     src={src}
                     onError={(e) => {
@@ -192,7 +190,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                     <ItemCard>
                         <ItemCover
                             index={index}
-                            src={url("cover", item.data.md5, "webp")}
+                            src={url("cover", item.data.md5, "jpg")}
                             alt="书籍封面"
                             onClick={() => {
                                 openDialog(url("cover", item.data.md5, "jpg"));
@@ -256,7 +254,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                         <ItemCard>
                             <ItemCover
                                 index={index}
-                                src={url("cover", item.data.md5, "webp")}
+                                src={url("cover", item.data.md5, "jpg")}
                                 alt="试卷封面"
                                 onClick={() => {
                                     openDialog(url("cover", item.data.md5, "jpg"));
@@ -301,7 +299,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                             <ItemCard>
                                 <ItemCover
                                     index={index}
-                                    src={url("cover", item.data.md5, "webp")}
+                                    src={url("cover", item.data.md5, "jpg")}
                                     alt="资料封面"
                                     onClick={() => {
                                         openDialog(url("cover", item.data.md5, "jpg"));
