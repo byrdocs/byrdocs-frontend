@@ -45,15 +45,7 @@ function ItemCard({ children, progress, onCancel }: { children: React.ReactNode,
 }
 
 function ItemCover({ src, alt, index, className, onClick }: { index?: number, src: string; alt: string, className?: string, onClick?: () => void }) {
-    const imgRef = useRef(null);
     const [isError, setIsError] = useState(false);
-    return (<>
-         <img
-            alt={alt}
-            loading="lazy"
-            src={src}
-         />
-         </>)
     return (
         <div className="relative group h-full my-auto" onClick={() => {
             if (!isError && onClick) {
@@ -63,7 +55,6 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
             <div className="h-full flex">
                 <img
                     alt={alt}
-                    ref={imgRef}
                     loading="lazy"
                     src={src}
                     onError={(e) => {
