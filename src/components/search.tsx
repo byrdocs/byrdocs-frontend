@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Item } from "@/types"
-import { ItemDisplay } from "./item"
+import { ItemDisplay } from "./item/ItemDisplay"
 import { useLocation, useNavigate } from "react-router-dom"
 import Fuse from 'fuse.js'
 
