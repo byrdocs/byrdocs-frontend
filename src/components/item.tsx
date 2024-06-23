@@ -190,7 +190,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                     <ItemCard>
                         <ItemCover
                             index={index}
-                            src={url("cover", item.data.md5, "jpg")}
+                            src={url("cover", item.data.md5, "webp")}
                             alt="书籍封面"
                             onClick={() => {
                                 openDialog(url("cover", item.data.md5, "jpg"));
@@ -254,7 +254,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                         <ItemCard>
                             <ItemCover
                                 index={index}
-                                src={url("cover", item.data.md5, "jpg")}
+                                src={url("cover", item.data.md5, "webp")}
                                 alt="试卷封面"
                                 onClick={() => {
                                     openDialog(url("cover", item.data.md5, "jpg"));
@@ -299,7 +299,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                             <ItemCard>
                                 <ItemCover
                                     index={index}
-                                    src={url("cover", item.data.md5, "jpg")}
+                                    src={url("cover", item.data.md5, "webp")}
                                     alt="资料封面"
                                     onClick={() => {
                                         openDialog(url("cover", item.data.md5, "jpg"));
