@@ -21,10 +21,14 @@ export default defineConfig({
   server: {
     proxy: {
         "/files": {
-            target: "http://localhost:3000",
+            target: "http://localhost:9283",
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/files/, ""),
         },
+        "/api": {
+            target: "http://localhost:9283",
+            changeOrigin: true
+        }
     }
   }
 })

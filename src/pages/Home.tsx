@@ -1,5 +1,5 @@
 
-import { Search } from "@/components/search";
+import { Search } from "@/components/search/search";
 import { Link } from "react-router-dom";
 
 import '@fontsource-variable/saira';

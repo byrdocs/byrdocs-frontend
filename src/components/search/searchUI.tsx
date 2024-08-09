@@ -1,14 +1,17 @@
 import { Input } from "@/components/ui/input"
-import { Logo } from "./logo"
+import { Logo } from "../logo"
 import { useState, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Item } from "@/types"
-import { ItemDisplay } from "./item"
+import { ItemDisplay } from "../item"
 import { useLocation, useNavigate } from "react-router-dom"
-import Fuse from 'fuse.js'
 
-export function Search() {
+export function SearchUI({ search, keyword, delay }: {
+    search: (q: string, active: number) => Promise<Item[]>,
+    keyword?: string | null,
+    delay: number
+}) {
     const location = useLocation()
     const query = new URLSearchParams(location.search)
     const q = query.get("q") || ""
@@ -22,8 +25,6 @@ export function Search() {
     const navigate = useNavigate()
     const lastSearch = useRef<number>(0)
     const lastSearchTimer = useRef<number>(0)
-    const docsData = useRef<Item[]>([])
-    const categoriesData = useRef<Record<string, Item[]>>({})
     const [searchResult, setSearchResult] = useState<Item[]>([])
     const [searchEmpty, setSearchEmpty] = useState(false)
 
@@ -33,18 +34,6 @@ export function Search() {
         input.current?.focus()
         setShowClear(false)
         navigate("/")
-    }
-
-    function updateCategories() {
-        const categories: Record<string, Item[]> = {}
-        docsData.current.forEach(item => {
-            if (!categories[item.type]) {
-                categories[item.type] = []
-            }
-            categories[item.type].push(item)
-        })
-        categoriesData.current = categories
-        
     }
 
     useEffect(() => {
@@ -73,68 +62,39 @@ export function Search() {
         }
         document.addEventListener("keydown", handleKeyDown)
         window.addEventListener("scroll", handleScroll)
-        docsData.current = JSON.parse(localStorage.getItem("metadata") || "[]")
-        
+
         input.current?.focus()
 
-        if (q && docsData.current.length) {
-            if (!top) {
-                setTop(true)
-            }
-            updateCategories()
-            search(active)
-        }
-
-        fetch("https://files.byrdocs.org/metadata.json")
-            .then(res => res.json())
-            .then((_data: Item[]) => {
-                const data = _data.map(item => {
-                    if (item.type === 'book') {
-                        item.data._isbn = item.data.isbn.replace(/-/g, "")
-                    }
-                    return item
-                })
-                
-                docsData.current = data
-                updateCategories()
-                localStorage.setItem("metadata", JSON.stringify(data))
-
-                if (q) {
-                    if (!top) {
-                        setTop(true)
-                    }
-                    search(active)
-                }
-            })
         return () => {
             document.removeEventListener("keydown", handleKeyDown)
             window.removeEventListener("scroll", handleScroll)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    function search(active: number = 1) {
+    useEffect(() => {
+        if (keyword) {
+            if (!top) {
+                setTop(true)
+            }
+            performSearch(active)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [keyword, active, top])
+
+    async function performSearch(active: number = 1) {
         setSearchEmpty(false)
-        const search = active === 1 ? docsData.current : categoriesData.current[active === 2 ? "book" : active === 3 ? "test" : "doc"]
-        const fuse = new Fuse(search, {
-            keys: ["data.title", "data.authors", "data.translators", "data.publisher", "data.isbn",
-                "data.edition", "data.course.name", "data.course.type", "data.stage", "data.content",
-                "data.md5" ],
-            ignoreLocation: true,
-            useExtendedSearch: false,
-            threshold: 0.4,
-        })
         if (!input.current) return
         if (!input.current.value) {
             setSearchResult([])
             return
         }
         const q = input.current.value
-        const result = fuse.search(q)
+        const result = await search(q, active)
         if (result.length === 0) {
             setSearchEmpty(true)
         }
-        setSearchResult(result.map(item => item.item))
+        setSearchResult(result)
     }
 
     function searchActive(active: number) {
@@ -146,7 +106,7 @@ export function Search() {
         }
         navigate("/?" + q.toString())
         setActive(active)
-        search(active)
+        performSearch(active)
     }
 
 
@@ -210,9 +170,8 @@ export function Search() {
                                     onInput={() => {
                                         setTop(true)
                                         setShowClear(!!input.current?.value)
-                                        search(active)
 
-                                        if (lastSearchTimer.current && new Date().getTime() - lastSearch.current < 500) {
+                                        if (lastSearchTimer.current && new Date().getTime() - lastSearch.current < delay) {
                                             clearTimeout(lastSearchTimer.current)
                                         }
                                         lastSearch.current = new Date().getTime()
@@ -220,16 +179,17 @@ export function Search() {
                                             const q = new URLSearchParams(location.search)
                                             if (input.current?.value) {
                                                 q.set("q", input.current?.value)
-                                                navigate("/?" + q.toString())
+                                                navigate("/?" + q.toString(), { replace: true })
                                             } else {
                                                 q.delete("q")
                                                 if (q.size) {
-                                                    navigate("/?" + q.toString())
+                                                    navigate("/?" + q.toString(), { replace: true })
                                                 } else {
-                                                    navigate("/")
+                                                    navigate("/", { replace: true })
                                                 }
                                             }
-                                        }, 500)
+                                            performSearch(active)
+                                        }, delay)
                                     }}
                                     ref={input}
                                 />
@@ -267,17 +227,17 @@ export function Search() {
                                 <ItemDisplay key={index} item={item} index={index} />
                             ))}
                         </div>) : (
-                        <div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
-                            <div className="text-lg sm:text-2xl font-light m-auto ">
-                                {searchEmpty ? (
-                                    <div className="px-2">
-                                        <div className="mb-2">没有找到相关结果</div>
-                                        <div className="text-xs">注意使用全称搜索，例如“高等数学”而非“高数”</div>
-                                    </div>
-                                ) : "搜索书籍、试卷和资料"}
+                            <div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
+                                <div className="text-lg sm:text-2xl font-light m-auto ">
+                                    {searchEmpty ? (
+                                        <div className="px-2">
+                                            <div className="mb-2">没有找到相关结果</div>
+                                            <div className="text-xs">注意使用全称搜索，例如“高等数学”而非“高数”</div>
+                                        </div>
+                                    ) : "搜索书籍、试卷和资料"}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                 </>
             )}
         </>
