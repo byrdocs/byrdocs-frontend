@@ -1,7 +1,7 @@
 import { SearchUI } from "./searchUI"
 
 
-const search_endpoint = "/api/indexes/docs/search"
+const search_endpoint = "https://byrdocs.org/api/indexes/docs/search"
 const search_key = "c70a44a089f3478923c0aecac70f3eaee3f74715b5e26551ce0a9c29da11306a"
 
 export function MeiliSearch() {
