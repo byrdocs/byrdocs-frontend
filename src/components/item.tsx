@@ -287,7 +287,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                                     </div>
                                     <div>
                                         <span className="font-medium">类别: </span>
-                                        {item.data.content}
+                                        {typeof(item.data.content) === "string" ? item.data.content : item.data.content.join(", ")}
                                     </div>
                                 </div>
                             </div>

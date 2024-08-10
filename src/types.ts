@@ -32,7 +32,7 @@ export type Test = {
     },
     filetype: string,
     stage?: '期中' | '期末',
-    content: '试题' | '答案' | '试题+答案',
+    content: '试题' | '答案' | '试题+答案' | string[]
     md5: string,
     filesize?: number,
 }
