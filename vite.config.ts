@@ -11,6 +11,8 @@ process.env.VITE_GIT_COMMIT_DATE = commitDate;
 process.env.VITE_GIT_COMMIT_HASH = commitHash;
 process.env.VITE_GIT_LAST_COMMIT_MESSAGE = lastCommitMessage;
 
+const BASE_URL = process.env.BASE_URL ?? "https://byrdocs.org";
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -20,11 +22,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-        "/files": {
-            target: "http://localhost:3000",
-            changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/files/, ""),
-        },
+        "/files": BASE_URL,
+        "/api": BASE_URL
     }
   }
 })

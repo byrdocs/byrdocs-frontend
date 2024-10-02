@@ -12,6 +12,7 @@ import { Toaster } from "@/components/ui/sonner"
 
 import Home from '@/pages/Home.tsx'
 import About from '@/pages/About.tsx'
+import Callback from '@/pages/Callback.tsx'
 import Notfound from './pages/Notfound';
 
 const router = createBrowserRouter([
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "/about",
     element: <About />,
+  },
+  {
+    path: "/callback",
+    element: <Callback />,
   },
   {
     path: "*",
