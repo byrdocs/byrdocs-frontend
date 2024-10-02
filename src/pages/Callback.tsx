@@ -93,7 +93,7 @@ export default function About() {
 
     return (
         <>
-            <div className="md:w-[400px] w-full md:m-auto px-10 flex flex-col pt-12">
+            <div className="md:w-[500px] w-full md:m-auto px-10 flex flex-col pt-12">
                 <div className="w-full m-auto">
                     <Link to="/">
                         <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
@@ -102,10 +102,13 @@ export default function About() {
                         登录 <code>byrdocs-cli</code>
                     </div>
                     {error ? (
-                        <div className="space-y-3 text-xl">
+                        <div>
                             <ErrorIcon />
-                            <div className='text-center text-red-500 font-bold'>
-                                {error}
+                            <div className='text-center text-red-500 font-bold text-xl'>
+                                登录失败
+                            </div>
+                            <div className='text-center text-red-300 dark:text-red-800 mt-6'>
+                                <code>{error}</code>
                             </div>
                         </div>
 
