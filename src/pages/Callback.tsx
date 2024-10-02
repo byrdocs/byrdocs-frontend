@@ -1,6 +1,8 @@
 import Loading from '@/assets/loading.svg'
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { toast } from 'sonner';
 
 function LoadingIcon() {
     return (
@@ -49,6 +51,7 @@ function ErrorIcon() {
 export default function About() {
     const [token, setToken] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [showDetail, setShowDetail] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
@@ -80,12 +83,22 @@ export default function About() {
             })
     }, [location.search]);
 
+    function copy() {
+        if (!globalThis.navigator.clipboard) {
+            return
+        }
+        navigator.clipboard.writeText(`byrdocs login --token ${token}`);
+        toast.success('已复制命令');
+    }
+
     return (
         <>
-            <div className="md:w-[800px] w-full md:m-auto px-10 flex flex-col pt-12">
+            <div className="md:w-[400px] w-full md:m-auto px-10 flex flex-col pt-12">
                 <div className="w-full m-auto">
-                    <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
-                    <div className="text-center mb-8 text-2xl md:text-3xl font-bold" style={{ lineHeight: 3 }}>
+                    <Link to="/">
+                        <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
+                    </Link>
+                    <div className="text-center text-2xl md:text-3xl font-bold" style={{ lineHeight: 3 }}>
                         登录 <code>byrdocs-cli</code>
                     </div>
                     {error ? (
@@ -97,16 +110,30 @@ export default function About() {
                         </div>
 
                     ) : (
-                        <div className="space-y-3 text-xl">
+                        <div>
                             {token ? (
                                 <>
                                     <SuccessIcon />
-                                    <div className='text-center text-green-500 font-bold'>
-                                        登录成功！
+                                    <div className='text-center text-green-500 font-bold text-xl'>
+                                        登录成功
                                     </div>
-                                    <div className='text-center text-green-500 font-bold'>
-                                        Token: {token}
-                                    </div>
+                                    {showDetail ? (
+                                        <>
+                                            <div className='mt-11'>
+                                                运行以下命令：
+                                            </div>
+                                            <code className='block mt-4 bg-gray-100 dark:bg-gray-800 select-all p-2 rounded-md break-all text-gray-700 dark:text-gray-300' onClick={copy}>
+                                                byrdocs login --token {token}
+                                            </code>
+                                        </>
+                                    ) : (
+                                        <div className='text-center mt-11 text-gray-500 cursor-pointer' onClick={() => {
+                                            setShowDetail(true)
+                                            copy()
+                                        }}>
+                                            手动登录
+                                        </div>
+                                    )}
                                 </>
                             ) : <LoadingIcon />}
                         </div>
