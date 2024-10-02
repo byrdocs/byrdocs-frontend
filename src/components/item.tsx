@@ -190,10 +190,10 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                     <ItemCard>
                         <ItemCover
                             index={index}
-                            src={url("cover", item.data.md5, "webp")}
+                            src={url("cover", item.id, "webp")}
                             alt="书籍封面"
                             onClick={() => {
-                                openDialog(url("cover", item.data.md5, "jpg"));
+                                openDialog(url("cover", item.id, "jpg"));
                             }}
                         />
                         <div className={cn(
@@ -206,7 +206,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                             <div>
                                 <ItemTitle
                                     filename={`${item.data.title}.${item.data.filetype}`}
-                                    href={url(item.type, item.data.md5, item.data.filetype)}
+                                    href={url(item.type, item.id, item.data.filetype)}
                                 >
                                     {item.data.title}
                                 </ItemTitle>
@@ -254,10 +254,10 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                         <ItemCard>
                             <ItemCover
                                 index={index}
-                                src={url("cover", item.data.md5, "webp")}
+                                src={url("cover", item.id, "webp")}
                                 alt="试卷封面"
                                 onClick={() => {
-                                    openDialog(url("cover", item.data.md5, "jpg"));
+                                    openDialog(url("cover", item.id, "jpg"));
                                 }}
                             />
                             <div className={cn(
@@ -266,7 +266,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                                 <div>
                                     <ItemTitle
                                         filename={`${item.data.title}.${item.data.filetype}`}
-                                        href={url(item.type, item.data.md5, item.data.filetype)}
+                                        href={url(item.type, item.id, item.data.filetype)}
                                     >
                                         {item.data.title}
                                     </ItemTitle>
@@ -299,17 +299,17 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                             <ItemCard>
                                 <ItemCover
                                     index={index}
-                                    src={url("cover", item.data.md5, "webp")}
+                                    src={url("cover", item.id, "webp")}
                                     alt="资料封面"
                                     onClick={() => {
-                                        openDialog(url("cover", item.data.md5, "jpg"));
+                                        openDialog(url("cover", item.id, "jpg"));
                                     }}
                                 />
                                 <div className="p-2 md:p-4 space-y-1 md:space-y-2">
                                     <div>
                                         <ItemTitle
                                             filename={`${item.data.title}.${item.data.filetype}`}
-                                            href={url(item.type, item.data.md5, item.data.filetype)}
+                                            href={url(item.type, item.id, item.data.filetype)}
                                         >
                                             {item.data.title}
                                         </ItemTitle>

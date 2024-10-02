@@ -1,12 +1,15 @@
 
 export type Item = {
     type: "book"
+    id: string
     data: Book
 } | {
     type: "test"
+    id: string
     data: Test
 } | {
     type: "doc"
+    id: string
     data: Doc
 }
 
@@ -19,7 +22,6 @@ export type Book = {
     isbn: string,
     _isbn: string,
     filetype: string,
-    md5: string,
     filesize?: number,
 }
 
@@ -33,7 +35,6 @@ export type Test = {
     filetype: string,
     stage?: '期中' | '期末',
     content: '试题' | '答案' | '试题+答案' | string[]
-    md5: string,
     filesize?: number,
 }
 
@@ -42,7 +43,6 @@ export type DocContent = '思维导图' | '题库' | '答案' | '知识点' | '�
 export type Doc = {
     title: string,
     filetype: string,
-    md5: string,
     course: {
         type?: "本科" | "研究生",
         name?: string,
