@@ -14,7 +14,7 @@ import {
 import { toast } from "sonner";
 
 
-const prefix = "https://byrdocs.org/files";
+const prefix = "/files";
 const url = (type: string, md5: string, filetype: string) => `${prefix}/${type}s/${md5}.${filetype}`;
 
 function ItemCard({ children, progress, onCancel }: { children: React.ReactNode, progress?: number, onCancel?: () => void }) {
