@@ -119,7 +119,7 @@ export function Search() {
         const fuse = new Fuse(search, {
             keys: ["data.title", "data.authors", "data.translators", "data.publisher", "data.isbn",
                 "data.edition", "data.course.name", "data.course.type", "data.stage", "data.content",
-                "data.md5" ],
+                "data.md5", "data.college" ],
             ignoreLocation: true,
             useExtendedSearch: false,
             threshold: 0.4,
