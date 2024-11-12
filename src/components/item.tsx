@@ -123,12 +123,15 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
 }
 
 function ItemTitle({ children, filename, href }: { children: React.ReactNode, filename: string, href: string }) {
+    const url = new URL(href, location.origin)
+    const search = url.searchParams
+    search.set("filename", filename)
+    const newHref = href.replace(url.search, "") + "?" + search.toString()
     return (
         <h3 className="md:text-2xl font-bold mb-1">
             <a
                 className="underline-offset-2 hover:underline cursor-pointer"
-                href={href}
-                download={filename}
+                href={newHref}
             >
                 {children}
             </a>
