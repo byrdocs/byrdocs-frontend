@@ -85,7 +85,9 @@ export function Search() {
             search(active)
         }
 
-        fetch("https://files.byrdocs.org/metadata.json")
+        fetch(globalThis.location.hostname == "v2.byrdocs.org" ? 
+            "https://files.byrdocs.org/metadata2.json" :
+            "https://files.byrdocs.org/metadata.json")
             .then(res => res.json())
             .then((_data: Item[]) => {
                 const data = _data.map(item => {

@@ -48,7 +48,7 @@ function ErrorIcon() {
     )
 }
 
-export default function About() {
+export default function Callback() {
     const [token, setToken] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [showDetail, setShowDetail] = useState(false);
