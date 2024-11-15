@@ -5,8 +5,8 @@ function P({ children, className }: PropsWithChildren<{ className?: string }>) {
 }
 
 export default function Login() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [errorMsg, setErrormsg] = useState("")
+    setErrormsg("");
 
     return (
         <>
