@@ -10,11 +10,11 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 
 import Notfound from './pages/Notfound';
+import Home from './pages/Home';
 import Loading from './components/loading';
 
 import './index.css'
 
-const Home = lazy(() => import('./pages/Home'))
 const About = lazy(() => import('./pages/About'))
 const Callback = lazy(() => import('./pages/Callback'))
 const Auth = lazy(() => import('./pages/Auth'))
@@ -22,9 +22,7 @@ const Auth = lazy(() => import('./pages/Auth'))
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <React.Suspense fallback={<Loading />}>
-      <Home />
-    </React.Suspense>,
+    element: <Home />,
   },
   {
     path: "/about",
