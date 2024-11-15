@@ -85,14 +85,12 @@ export function Search() {
             search(active)
         }
 
-        fetch(globalThis.location.hostname == "v2.byrdocs.org" ? 
-            "https://files.byrdocs.org/metadata2.json" :
-            "https://files.byrdocs.org/metadata.json")
+        fetch("https://files.byrdocs.org/metadata2.json")
             .then(res => res.json())
             .then((_data: Item[]) => {
                 const data = _data.map(item => {
                     if (item.type === 'book') {
-                        item.data._isbn = item.data.isbn.replace(/-/g, "")
+                        item.data._isbn = item.data.isbn.map(x => x.replace(/-/g, ""))
                     }
                     return item
                 })

@@ -45,6 +45,12 @@ const router = createBrowserRouter([
     </React.Suspense>,
   },
   {
+    path: "/login/:uid",
+    element: <React.Suspense fallback={<Loading />}>
+      <Auth />
+    </React.Suspense>,
+  },
+  {
     path: "*",
     element: <Notfound />,
   }

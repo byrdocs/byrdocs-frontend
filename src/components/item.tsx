@@ -240,7 +240,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                                 )}>
                                     <div>
                                         <span className="font-medium">ISBN: </span>
-                                        <span className="select-all ml-1">{item.data.isbn}</span>
+                                        <span className="select-all ml-1">{item.data.isbn.join(", ")}</span>
                                     </div>
                                     {item.data.edition?.length ? (<div>
                                         <span className="font-medium">版次: </span>
@@ -287,7 +287,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                                 <div className="text-xs md:text-sm md:space-y-1">
                                     <div>
                                         <span className="font-medium">考试阶段: </span>
-                                        {item.data.stage ? item.data.stage : "其他"}
+                                        {item.data.time.stage || "其他"}
                                     </div>
                                     <div>
                                         <span className="font-medium">类别: </span>

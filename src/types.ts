@@ -19,23 +19,31 @@ export type Book = {
     translators: string[],
     edition?: string,
     publisher: string,
-    isbn: string,
-    _isbn: string,
+    publish_year?: string,
+    isbn: string[],
+    _isbn: string[],
     filetype: string,
     filesize?: number,
 }
 
+type TestContent = '原题' | '答案'
+
 export type Test = {
     title: string,
-    college: string,
+    college?: string[],
     course: {
         type?: "本科" | "研究生",
         name?: string,
     },
+    time: {
+        start: string,
+        end: string,
+        semester?: 'First' | 'Second',
+        stage?: '期中' | '期末'
+    },
     filetype: string,
-    stage?: '期中' | '期末',
-    content: '试题' | '答案' | '试题+答案' | string[]
-    filesize?: number,
+    content: TestContent[],
+    filesize: number
 }
 
 export type DocContent = '思维导图' | '题库' | '答案' | '知识点' | '课件'
