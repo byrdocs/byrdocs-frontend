@@ -94,7 +94,7 @@ export default function Login() {
 
     return (
         <>
-            <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background pt-12">
                 <Link to="/">
                     <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
                 </Link>
@@ -158,7 +158,7 @@ export default function Login() {
                             </P>
                         </div>
                     </div> :
-                    <div className="shadow-sm w-full md:w-[500px] m-auto p-4 dark:text-gray-300 mb-24">
+                    <div className="w-full md:w-[500px] m-auto p-4 dark:text-gray-300 mb-24">
                         <div className="flex flex-col p-6 pb-0 space-y-1">
                             <h3 className="whitespace-nowrap font-semibold tracking-tight text-2xl dark:text-white mb-4">
                                 此登录是如何工作的？
