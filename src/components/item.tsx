@@ -7,9 +7,12 @@ import { Item } from "@/types";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
+import { Search } from "lucide-react";
+
 import {
     Dialog,
-    DialogContent
+    DialogContent,
+    DialogTitle
 } from "@/components/ui/dialog"
 import { toast } from "sonner";
 
@@ -17,26 +20,25 @@ import { toast } from "sonner";
 const prefix = "/files";
 const url = (_type: string, md5: string, filetype: string) => `${prefix}/${md5}.${filetype}`;
 
-function ItemCard({ children, progress, onCancel }: { children: React.ReactNode, progress?: number, onCancel?: () => void }) {
+function Preview() {
+    return (
+        <>
+            <Search className="w-3 h-3 md:w-4 md:h-4 inline-block text-muted-foreground mb-[3px] mr-1" />
+            <span className="text-muted-foreground font-light md:text-base text-xs mr-[1px] select-none">预览</span>
+        </>
+    )
+}
 
+function ItemCard({ children, onPreview, canPreview }: { children: React.ReactNode, onPreview?: () => void, canPreview: boolean }) {
     return (
         <Card className="w-full rounded-none md:rounded-lg shadow-sm md:hover:shadow-md transition-shadow overflow-hidden relative group/card">
-            {progress ? (
-                <>
-                    <div className="h-[5px] left-[150px] hidden md:block absolute bg-primary" style={{
-                        width: `calc(${progress} * (100% - 150px))`
-                    }}>
-                    </div>
-                    <div className="h-[5px] left-[112.5px] block md:hidden absolute bg-primary " style={{
-                        width: `calc(${progress} * (100% - 112.5px))`
-                    }}></div>
-                    <div className=" absolute right-0 top-[5px] italic text-muted-foreground bg-muted px-1 rounded-l-md shadow-sm font-mono text-sm md:text-md">
-                        {(progress * 100).toFixed(1)}%
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="ml-1 mb-[1px] w-5 h-5 inline-block cursor-pointer" onClick={onCancel}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                        </svg>
-                    </div>
-                </>) : null}
+            {canPreview && (
+                <div className="md:opacity-0 group-hover/card:opacity-100 transition-opacity duration-100 absolute z-10 left-0 top-[5px] italic text-muted-foreground bg-muted px-1 rounded-r-md shadow-sm font-mono text-sm md:text-md">
+                    <button className="inline-block cursor-pointer" onClick={onPreview}>
+                        <Preview />
+                    </button>        
+                </div>
+            )}
             <div className="grid grid-cols-[112.5px_1fr] md:grid-cols-[150px_1fr] gap-2 md:gap-6 min-h-[150px] md:min-h-[200px]">
                 {children}
             </div>
@@ -168,7 +170,7 @@ function formatFileSize(size: number) {
     }
 }
 
-export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, index }) => {
+export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url: string) => void }> = ({ item, index, onPreview }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogImage, setDialogImage] = useState("");
     const downloading = useRef(false);
@@ -191,7 +193,10 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
         <>
             {item.type == "book" ?
                 (
-                    <ItemCard>
+                    <ItemCard 
+                        onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
+                        canPreview={item.data.filetype === "pdf"}
+                    >
                         <ItemCover
                             index={index}
                             src={url("cover", item.id, "webp")}
@@ -255,7 +260,10 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                 :
                 item.type == "test" ?
                     (
-                        <ItemCard>
+                        <ItemCard 
+                            onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
+                            canPreview={item.data.filetype === "pdf"}
+                        >
                             <ItemCover
                                 index={index}
                                 src={url("cover", item.id, "webp")}
@@ -300,7 +308,10 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
 
                     item.type == "doc" ?
                         (
-                            <ItemCard>
+                            <ItemCard 
+                                onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
+                                canPreview={item.data.filetype === "pdf"}
+                            >
                                 <ItemCover
                                     index={index}
                                     src={url("cover", item.id, "webp")}
@@ -339,6 +350,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
             }
             <Dialog open={isDialogOpen} onOpenChange={(isOpen: boolean) => setIsDialogOpen(isOpen)}>
                 <DialogContent className="p-0 overflow-hidden">
+                    <DialogTitle></DialogTitle>
                     <img
                         src={dialogImage}
                         className="object-contain"

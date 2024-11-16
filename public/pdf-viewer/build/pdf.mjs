@@ -9837,7 +9837,6 @@ class PDFFetchStreamReader {
     const url = source.url;
     fetch(url, {
       ...createFetchOptions(headers, this._withCredentials, this._abortController),
-      method: "HEAD",
       redirect: 'manual'
     }).then(response => {
       if (response.type === 'opaqueredirect') {
@@ -9846,6 +9845,7 @@ class PDFFetchStreamReader {
       if (!validateResponseStatus(response.status)) {
         throw createResponseStatusError(response.status, url);
       }
+      this._reader = response.body.getReader();
       this._headersCapability.resolve();
       const responseHeaders = response.headers;
       const {
@@ -9860,6 +9860,9 @@ class PDFFetchStreamReader {
       this._isRangeSupported = allowRangeRequests;
       this._contentLength = suggestedLength || this._contentLength;
       this._filename = extractFilenameFromHeader(responseHeaders);
+      if (!this._isStreamingSupported && this._isRangeSupported) {
+        this.cancel(new AbortException("Streaming is disabled."));
+      }
     }).catch(this._headersCapability.reject);
     this.onProgress = null;
   }

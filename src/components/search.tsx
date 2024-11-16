@@ -5,12 +5,23 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Item } from "@/types"
 import { ItemDisplay } from "./item"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import Fuse from 'fuse.js'
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+  } from "@/components/ui/drawer"
+  
 
 export function Search() {
     const location = useLocation()
-    const query = new URLSearchParams(location.search)
+    const [query, setQuery] = useSearchParams()
     const q = query.get("q") || ""
     const [top, setTop] = useState(false)
     const input = useRef<HTMLInputElement>(null)
@@ -26,6 +37,7 @@ export function Search() {
     const categoriesData = useRef<Record<string, Item[]>>({})
     const [searchResult, setSearchResult] = useState<Item[]>([])
     const [searchEmpty, setSearchEmpty] = useState(false)
+    const [preview, setPreview] = useState("")
 
     function reset() {
         setTop(false)
@@ -98,13 +110,6 @@ export function Search() {
                 docsData.current = data
                 updateCategories()
                 localStorage.setItem("metadata", JSON.stringify(data))
-
-                if (q) {
-                    if (!top) {
-                        setTop(true)
-                    }
-                    search(active)
-                }
             })
         return () => {
             document.removeEventListener("keydown", handleKeyDown)
@@ -113,13 +118,22 @@ export function Search() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    useEffect(() => {
+        if (!top && q) {
+            setTop(true)
+        }
+        if (input.current)
+            input.current.value = q
+        search(active)
+    }, [q, docsData])
+
     function search(active: number = 1) {
         setSearchEmpty(false)
         const search = active === 1 ? docsData.current : categoriesData.current[active === 2 ? "book" : active === 3 ? "test" : "doc"]
         const fuse = new Fuse(search, {
-            keys: ["data.title", "data.authors", "data.translators", "data.publisher", "data.isbn",
+            keys: ["data.title", "data.authors", "data.translators", "data.publisher", "data.isbn", "data._isbn",
                 "data.edition", "data.course.name", "data.course.type", "data.stage", "data.content",
-                "data.md5", "data.college" ],
+                "id", "data.college" ],
             ignoreLocation: true,
             useExtendedSearch: false,
             threshold: 0.4,
@@ -177,7 +191,7 @@ export function Search() {
                     </div>
                     <div className={cn("h-12 md:h-14", { "hidden": !inputFixed })} ref={relative}></div>
                     <div className={cn(
-                        "z-10 transition-shadow duration-200",
+                        "z-20 transition-shadow duration-200",
                         {
                             "fixed top-0 left-0 w-full py-4 bg-background shadow-md": inputFixed,
                             "md:w-[800px] max-w-full md:m-auto": !inputFixed,
@@ -220,15 +234,10 @@ export function Search() {
                                             const q = new URLSearchParams(location.search)
                                             if (input.current?.value) {
                                                 q.set("q", input.current?.value)
-                                                navigate("/?" + q.toString())
                                             } else {
                                                 q.delete("q")
-                                                if (q.size) {
-                                                    navigate("/?" + q.toString())
-                                                } else {
-                                                    navigate("/")
-                                                }
                                             }
+                                            setQuery(q)
                                         }, 500)
                                     }}
                                     ref={input}
@@ -240,6 +249,7 @@ export function Search() {
                                         setShowClear(false)
                                         setSearchEmpty(false)
                                         setSearchResult([])
+                                        setQuery(new URLSearchParams())
                                     }}>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -264,7 +274,9 @@ export function Search() {
                     {searchResult.length !== 0 ?
                         (<div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:m-auto p-0 md:p-5">
                             {searchResult.map((item, index) => (
-                                <ItemDisplay key={index} item={item} index={index} />
+                                <ItemDisplay key={index} item={item} index={index} onPreview={url => {
+                                    setPreview(url)
+                                }}/>
                             ))}
                         </div>) : (
                         <div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
@@ -280,6 +292,19 @@ export function Search() {
                     )}
                 </>
             )}
+
+            <Drawer open={preview !== ""} onClose={() => setPreview("")}>
+                <DrawerContent>
+                    <DrawerTitle></DrawerTitle>
+                    <div className="h-[85vh]">
+                        <iframe
+                            src={`/pdf-viewer/web/viewer.html?file=${encodeURIComponent(preview)}`}
+                            className="w-full h-full"
+                        />
+                    </div>
+                </DrawerContent>
+            </Drawer>
+
         </>
     )
 }
