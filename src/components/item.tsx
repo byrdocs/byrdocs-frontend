@@ -12,7 +12,7 @@ import {
     DialogContent
 } from "@/components/ui/dialog"
 import { toast } from "sonner";
-
+import PdfViewer from "@/components/PdfViewer"; // Pcd5e
 
 const prefix = "/files";
 const url = (_type: string, md5: string, filetype: string) => `${prefix}/${md5}.${filetype}`;
@@ -171,12 +171,19 @@ function formatFileSize(size: number) {
 export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, index }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogImage, setDialogImage] = useState("");
+    const [isPdfDialogOpen, setIsPdfDialogOpen] = useState(false); // P03f1
+    const [pdfUrl, setPdfUrl] = useState(""); // P03f1
     const downloading = useRef(false);
 
     function openDialog(image: string) {
         setDialogImage(image);
         setIsDialogOpen(true);
     }
+
+    function openPdfDialog(url: string) { // P03f1
+        setPdfUrl(url); // P03f1
+        setIsPdfDialogOpen(true); // P03f1
+    } // P03f1
 
     useEffect(() => {
         return () => {
@@ -248,6 +255,12 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                                     </div>) : null}
                                 </div>
                             </div>
+                            <button // P6565
+                                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded" // P6565
+                                onClick={() => openPdfDialog(url(item.type, item.id, item.data.filetype))} // P6565
+                            > // P6565
+                                预览 // P6565
+                            </button> // P6565
                         </div>
 
                     </ItemCard>
@@ -294,6 +307,12 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                                         {typeof(item.data.content) === "string" ? item.data.content : item.data.content.join(", ")}
                                     </div>
                                 </div>
+                                <button // P6565
+                                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded" // P6565
+                                    onClick={() => openPdfDialog(url(item.type, item.id, item.data.filetype))} // P6565
+                                > // P6565
+                                    预览 // P6565
+                                </button> // P6565
                             </div>
                         </ItemCard>
                     ) :
@@ -332,6 +351,12 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                                             {item.data.content.join(", ")}
                                         </div>
                                     </div>
+                                    <button // P6565
+                                        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded" // P6565
+                                        onClick={() => openPdfDialog(url(item.type, item.id, item.data.filetype))} // P6565
+                                    > // P6565
+                                        预览 // P6565
+                                    </button> // P6565
                                 </div>
                             </ItemCard>
                         ) :
@@ -346,6 +371,11 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number }> = ({ item, in
                     </img>
                 </DialogContent>
             </Dialog>
+            <Dialog open={isPdfDialogOpen} onOpenChange={(isOpen: boolean) => setIsPdfDialogOpen(isOpen)}> // P03f1
+                <DialogContent className="p-0 overflow-hidden"> // P03f1
+                    <PdfViewer url={pdfUrl} /> // P03f1
+                </DialogContent> // P03f1
+            </Dialog> // P03f1
         </>
     );
 };

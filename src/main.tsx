@@ -19,6 +19,7 @@ const About = lazy(() => import('./pages/About'))
 const Callback = lazy(() => import('./pages/Callback'))
 const Auth = lazy(() => import('./pages/Auth'))
 const Login = lazy(() => import('./pages/Login'))
+const PdfViewer = lazy(() => import('./components/PdfViewer'))
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,12 @@ const router = createBrowserRouter([
     path: "/login/:uuid",
     element: <React.Suspense fallback={<Loading />}>
       <Login />
+    </React.Suspense>,
+  },
+  {
+    path: "/pdf-viewer",
+    element: <React.Suspense fallback={<Loading />}>
+      <PdfViewer />
     </React.Suspense>,
   },
   {
