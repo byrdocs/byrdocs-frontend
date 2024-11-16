@@ -60,7 +60,7 @@ export default function Callback() {
             setError('参数错误，请重试');
             return;
         }
-        fetch('/api/oauth/callback', {
+        fetch('/api/auth/callback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

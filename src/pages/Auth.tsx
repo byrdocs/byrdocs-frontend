@@ -22,7 +22,8 @@ export default function Component() {
                         icon={<Github className="w-6 h-6" />}
                         title="GitHub 认证"
                         features={[{ icon: <Upload className="w-4 h-4" />, label: "上传" }]}
-                        to={`/github/${arg.uid}`}
+                        to={`/github/${arg.uuid}`}
+                        external={true}
                     />
                     <AuthOption
                         icon={<Key className="w-6 h-6" />}
@@ -31,7 +32,7 @@ export default function Component() {
                             { icon: <Upload className="w-4 h-4" />, label: "上传" },
                             { icon: <Download className="w-4 h-4" />, label: "下载" }
                         ]}
-                        to={`/login/${arg.uid}`}
+                        to={`/login/${arg.uuid}`}
                     />
                 </div>
             </div>
@@ -44,10 +45,29 @@ interface AuthOptionProps {
     title: string;
     features: { icon: React.ReactNode; label: string }[];
     to: string;
+    external?: boolean;
 }
 
-function AuthOption({ icon, title, features, to }: AuthOptionProps) {
+function AuthOption({ icon, title, features, to, external }: AuthOptionProps) {
     return (
+        external ? 
+        <a className="w-full group block" href={to}>
+            <div className="flex items-center p-4 rounded-lg border border-border transition-all duration-300 ease-in-out transform hover:scale-[1.01] hover:shadow-md">
+                <div className="flex-shrink-0 mr-4 text-primary">{icon}</div>
+                <div className="flex-grow text-left space-y-2">
+                    <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+                    <div className="flex space-x-2">
+                        {features.map((feature, index) => (
+                            <Badge key={index} variant="secondary" className="flex items-center space-x-1">
+                                {feature.icon}
+                                <span>{feature.label}</span>
+                            </Badge>
+                        ))}
+                    </div>
+                </div>
+                <ArrowRight className="w-5 h-5 text-muted-foreground transition-all duration-300 ease-in-out transform group-hover:text-foreground" />
+            </div>
+        </a > :
         <Link className="w-full group block" to={to}>
             <div className="flex items-center p-4 rounded-lg border border-border transition-all duration-300 ease-in-out transform hover:scale-[1.01] hover:shadow-md">
                 <div className="flex-shrink-0 mr-4 text-primary">{icon}</div>

@@ -18,6 +18,7 @@ import './index.css'
 const About = lazy(() => import('./pages/About'))
 const Callback = lazy(() => import('./pages/Callback'))
 const Auth = lazy(() => import('./pages/Auth'))
+const Login = lazy(() => import('./pages/Login'))
 
 const router = createBrowserRouter([
   {
@@ -37,15 +38,15 @@ const router = createBrowserRouter([
     </React.Suspense>,
   },
   {
-    path: "/auth/:uid",
+    path: "/auth/:uuid",
     element: <React.Suspense fallback={<Loading />}>
       <Auth />
     </React.Suspense>,
   },
   {
-    path: "/login/:uid",
+    path: "/login/:uuid",
     element: <React.Suspense fallback={<Loading />}>
-      <Auth />
+      <Login />
     </React.Suspense>,
   },
   {
