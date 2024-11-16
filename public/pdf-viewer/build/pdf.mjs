@@ -9837,7 +9837,8 @@ class PDFFetchStreamReader {
     const url = source.url;
     fetch(url, {
       ...createFetchOptions(headers, this._withCredentials, this._abortController),
-      method: "HEAD"
+      method: "HEAD",
+      redirect: 'manual'
     }).then(response => {
       if (response.status === 302) {
         location.href = location.origin + "/login?to=" + encodeURIComponent(location.href.replace(location.origin, ""));
