@@ -291,7 +291,7 @@ export function Search() {
             <Drawer open={preview !== ""} onClose={() => setPreview("")}>
                 <DrawerContent>
                     <DrawerTitle></DrawerTitle>
-                    <div className="h-[85vh]">
+                    <div className="md:h-[85vh] h-[70vh]">
                         <iframe
                             src={`/pdf-viewer/web/viewer.html?file=${encodeURIComponent(preview)}`}
                             className="w-full h-full"
