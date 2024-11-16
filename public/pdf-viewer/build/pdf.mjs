@@ -11029,7 +11029,7 @@ class XfaText {
 
 
 
-const DEFAULT_RANGE_CHUNK_SIZE = 65536;
+const DEFAULT_RANGE_CHUNK_SIZE = 655360;
 const RENDERING_CANCELLED_TIMEOUT = 100;
 const DELAYED_CLEANUP_TIMEOUT = 5000;
 const DefaultCanvasFactory = isNodeJS ? NodeCanvasFactory : DOMCanvasFactory;
