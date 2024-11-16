@@ -9840,7 +9840,7 @@ class PDFFetchStreamReader {
       method: "HEAD",
       redirect: 'manual'
     }).then(response => {
-      if (response.status === 302) {
+      if (response.type === 'opaqueredirect') {
         location.href = location.origin + "/login?to=" + encodeURIComponent(location.href.replace(location.origin, ""));
       }
       if (!validateResponseStatus(response.status)) {
