@@ -1,5 +1,13 @@
 import { FormEvent, PropsWithChildren, useState } from "react"
-import { useParams } from "react-router-dom"
+import { AlertCircle } from "lucide-react"
+import { Link, useParams } from "react-router-dom"
+import { toast } from 'sonner';
+import {
+    Alert,
+    AlertDescription,
+    AlertTitle,
+} from "@/components/ui/alert"
+import { LoadingIcon, SuccessIcon } from "@/components/icons"
 
 function P({ children, className }: PropsWithChildren<{ className?: string }>) {
     return <p className={"text-sm  dark:text-gray-400 " + (className || '')}>{children}</p>
@@ -7,6 +15,8 @@ function P({ children, className }: PropsWithChildren<{ className?: string }>) {
 
 export default function Login() {
     const [showDetail, setShowDetail] = useState(false)
+    const [submitted, setSubmitted] = useState(false)
+    const [token, setToken] = useState('')
     const [studentID, setStudentID] = useState('')
     const [password, setPassword] = useState('')
     const [errorMsg, setErrorMsg] = useState('')
@@ -14,39 +24,94 @@ export default function Login() {
 
     async function submit(e: FormEvent) {
         e.preventDefault()
-        const res = await fetch("/api/auth/bupt_login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username: studentID, password, uuid: arg.uuid })
-        })
-        const data = await res.json()
-        if (!data.success) {
-            setErrorMsg(data.error || "登录失败")
+        setSubmitted(true)
+        try {
+            const res = await fetch("/api/auth/bupt_login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username: studentID, password, uuid: arg.uuid })
+            })
+            const data = await res.json()
+            if (!data.success) throw new Error(data.error)
+            setToken(data.token)
+        } catch (e) {
+            setErrorMsg((e as Error).message || "登录失败")
+            setSubmitted(false)
+        }
+    }
+
+    function copy() {
+        if (!globalThis.navigator.clipboard) {
             return
         }
-        console.log(data)
+        navigator.clipboard.writeText(`byrdocs login --token ${token}`);
+        toast.success('已复制命令');
+    }
+
+    if (submitted) {
+        return  (<>
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background md:w-[500px] w-full md:m-auto px-10">
+                <div className="w-full m-auto">
+                    <Link to="/">
+                        <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
+                    </Link>
+                    <div className="text-center text-2xl md:text-3xl font-bold" style={{ lineHeight: 3 }}>
+                        登录 <code>byrdocs-cli</code>
+                    </div>
+                    <div>
+                        {token ? (
+                            <>
+                                <SuccessIcon />
+                                <div className='text-center text-green-500 font-bold text-xl'>
+                                    登录成功
+                                </div>
+                                {showDetail ? (
+                                    <div>
+                                        <div className='mt-11'>
+                                            运行以下命令：
+                                        </div>
+                                        <code className='block mt-4 bg-gray-100 dark:bg-gray-800 select-all p-2 rounded-md break-all text-gray-700 dark:text-gray-300' onClick={copy}>
+                                            byrdocs login --token {token}
+                                        </code>
+                                    </div>
+                                ) : (
+                                    <div className='text-center mt-11 text-gray-500 cursor-pointer' onClick={() => {
+                                        setShowDetail(true)
+                                        copy()
+                                    }}>
+                                        手动登录
+                                    </div>
+                                )}
+                            </>
+                        ) : <LoadingIcon />}
+                    </div>
+                </div>
+            </div>
+        </>)
     }
 
     return (
         <>
-            <div className="min-h-[100vh] flex flex-col dark:bg-black">
+            <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+                <Link to="/">
+                    <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
+                </Link>
+                <div className="text-center text-2xl md:text-3xl font-bold " style={{ lineHeight: 3 }}>
+                    登录 <code>byrdocs-cli</code>
+                </div>
                 {!showDetail ?
-                    <div className={"md:rounded-lg border bg-card text-card-foreground shadow-sm w-full md:w-[500px] m-auto p-4 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 "}>
-                        <div className="flex flex-col p-6 pb-2 space-y-1">
-                            <h3 className="whitespace-nowrap font-semibold tracking-tight text-2xl dark:text-white">登录 BYR Docs</h3>
-                            <P className='pt-2'>
-                                使用
-                                <a target="_blank"
-                                    href="https://auth.bupt.edu.cn/authserver/login"
-                                    className={"text-blue-500 hover:underline dark:text-blue-400 dark:hover:text-blue-300 login"}>
-                                    北邮统一认证
-                                </a>
-                                账号登录以上传文件。
-                            </P>
-                            {errorMsg && <p className="text-sm text-red-500 dark:text-red-400">{errorMsg}</p>}
-                        </div>
+                    <div className={"w-full sm:w-[500px] mx-auto p-4 -mt-8"}>
+                        {errorMsg && <div className="px-6">
+                            <Alert variant="destructive">
+                                <AlertCircle className="h-4 w-4"/>
+                                <AlertTitle>Error</AlertTitle>
+                                <AlertDescription>
+                                    {errorMsg}
+                                </AlertDescription>
+                            </Alert>
+                        </div>}
                         <form onSubmit={submit}>
                             <div className="p-6 pt-2 space-y-4">
                                 <div className="space-y-2">
@@ -93,7 +158,7 @@ export default function Login() {
                             </P>
                         </div>
                     </div> :
-                    <div className="md:rounded-lg border bg-card text-card-foreground shadow-sm w-full md:w-[500px] m-auto p-4 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 my-12">
+                    <div className="shadow-sm w-full md:w-[500px] m-auto p-4 dark:text-gray-300 mb-24">
                         <div className="flex flex-col p-6 pb-0 space-y-1">
                             <h3 className="whitespace-nowrap font-semibold tracking-tight text-2xl dark:text-white mb-4">
                                 此登录是如何工作的？
