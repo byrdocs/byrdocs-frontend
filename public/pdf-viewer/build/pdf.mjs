@@ -9839,6 +9839,9 @@ class PDFFetchStreamReader {
       ...createFetchOptions(headers, this._withCredentials, this._abortController),
       method: "HEAD"
     }).then(response => {
+      if (response.status === 302) {
+        location.href = location.origin + "/login?to=" + encodeURIComponent(location.href.replace(location.origin, ""));
+      }
       if (!validateResponseStatus(response.status)) {
         throw createResponseStatusError(response.status, url);
       }
