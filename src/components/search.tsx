@@ -9,13 +9,8 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import Fuse from 'fuse.js'
 import {
     Drawer,
-    DrawerClose,
     DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
+    DrawerTitle
   } from "@/components/ui/drawer"
   
 
