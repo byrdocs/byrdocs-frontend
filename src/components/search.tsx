@@ -182,7 +182,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
 
 
     return (
-        <SidebarProvider open={desktopPreview !== ""}>
+        <SidebarProvider open={desktopPreview !== ""} >
             <div className="flex flex-col w-full">
                 <div className={cn(
                     "md:w-[800px] w-full md:mx-auto px-5 flex flex-col",
