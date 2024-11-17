@@ -1,5 +1,4 @@
-import { ArrowRight, Key, Upload, Download } from 'lucide-react'
-import { Badge } from "@/components/ui/badge"
+import { ArrowRight, Key } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom';
 
 function Github({ className }: { className?: string }) {
