@@ -33,7 +33,7 @@ export default function Component() {
                         icon={<Github className="w-6 h-6 dark:text-white" />}
                         title="GitHub 认证"
                         description='仅限 byrdocs GitHub 组织成员使用'
-                        to={`/github/${arg.uuid}/${arg.service ?? ''}`}
+                        to={`/api/auth/github/${arg.uuid}/${arg.service ?? ''}`}
                         external={true}
                     />
                 </div>
