@@ -112,3 +112,32 @@
     opacity: 1;
   }
 }
+
+.loading_spinner {
+  transform-origin: center;
+  animation: spinner_animation_1 2s linear infinite;
+}
+.loading_spinner circle {
+  stroke-linecap: round;
+  animation: spinner_animation_2 1.5s ease-in-out infinite;
+}
+@keyframes spinner_animation_1 {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spinner_animation_2 {
+  0% {
+    stroke-dasharray: 0 150;
+    stroke-dashoffset: 0;
+  }
+  47.5% {
+    stroke-dasharray: 42 150;
+    stroke-dashoffset: -16;
+  }
+  95%,
+  100% {
+    stroke-dasharray: 42 150;
+    stroke-dashoffset: -59;
+  }
+}

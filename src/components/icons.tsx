@@ -1,8 +1,10 @@
-import Loading from '@/assets/loading.svg'
+import { cn } from "@/lib/utils"
 
-export function LoadingIcon() {
+export function LoadingIcon({ className }: { className?: string }) {
     return (
-        <img src={Loading} alt="loading" className="animate-spin w-20 h-20 mx-auto select-none" />
+        <svg stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className={cn("animate-spin w-20 h-20 mx-auto select-none", className)}>
+            <g className="loading_spinner"><circle cx="12" cy="12" r="9.5" fill="none" stroke-width="1"></circle></g>
+        </svg>
     )
 }
 
