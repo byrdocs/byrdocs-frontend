@@ -24,20 +24,17 @@ export default function Component() {
                 </div>
                 <div className="space-y-4">
                     <AuthOption
-                        icon={<Github className="w-6 h-6 dark:text-white" />}
-                        title="GitHub 认证"
-                        features={[{ icon: <Upload className="w-4 h-4" />, label: "上传" }]}
-                        to={`/github/${arg.uuid}`}
-                        external={true}
-                    />
-                    <AuthOption
                         icon={<Key className="w-6 h-6 dark:text-white" />}
                         title="北京邮电大学统一认证"
-                        features={[
-                            { icon: <Upload className="w-4 h-4" />, label: "上传" },
-                            { icon: <Download className="w-4 h-4" />, label: "下载" }
-                        ]}
+                        description='适用于校内用户的便捷认证方式'
                         to={`/login/${arg.uuid}`}
+                    />
+                    <AuthOption
+                        icon={<Github className="w-6 h-6 dark:text-white" />}
+                        title="GitHub 认证"
+                        description='仅限 byrdocs GitHub 组织成员使用'
+                        to={`/github/${arg.uuid}`}
+                        external={true}
                     />
                 </div>
             </div>
@@ -48,12 +45,12 @@ export default function Component() {
 interface AuthOptionProps {
     icon: React.ReactNode;
     title: string;
-    features: { icon: React.ReactNode; label: string }[];
+    description?: string;
     to: string;
     external?: boolean;
 }
 
-function AuthOption({ icon, title, features, to, external }: AuthOptionProps) {
+function AuthOption({ icon, title, description, to, external }: AuthOptionProps) {
     return (
         external ? 
         <a className="w-full group block" href={to}>
@@ -61,13 +58,8 @@ function AuthOption({ icon, title, features, to, external }: AuthOptionProps) {
                 <div className="flex-shrink-0 mr-4 text-primary">{icon}</div>
                 <div className="flex-grow text-left space-y-2">
                     <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-                    <div className="flex space-x-2">
-                        {features.map((feature, index) => (
-                            <Badge key={index} variant="secondary" className="flex items-center space-x-1">
-                                {feature.icon}
-                                <span>{feature.label}</span>
-                            </Badge>
-                        ))}
+                    <div className="flex space-x-2 text-muted-foreground">
+                        {description}
                     </div>
                 </div>
                 <ArrowRight className="w-5 h-5 text-muted-foreground transition-all duration-300 ease-in-out transform group-hover:text-foreground" />
@@ -78,13 +70,8 @@ function AuthOption({ icon, title, features, to, external }: AuthOptionProps) {
                 <div className="flex-shrink-0 mr-4 text-primary">{icon}</div>
                 <div className="flex-grow text-left space-y-2">
                     <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-                    <div className="flex space-x-2">
-                        {features.map((feature, index) => (
-                            <Badge key={index} variant="secondary" className="flex items-center space-x-1">
-                                {feature.icon}
-                                <span>{feature.label}</span>
-                            </Badge>
-                        ))}
+                    <div className="flex space-x-2 text-muted-foreground">
+                        {description}
                     </div>
                 </div>
                 <ArrowRight className="w-5 h-5 text-muted-foreground transition-all duration-300 ease-in-out transform group-hover:text-foreground" />
