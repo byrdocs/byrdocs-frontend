@@ -37,6 +37,9 @@ export default function Login() {
             const data = await res.json()
             if (!data.success) throw new Error(data.error)
             setToken(data.token)
+            if (service === 'byrdocs' && data.data) {
+                location.href = data.data
+            }
         } catch (e) {
             setErrorMsg((e as Error).message || "登录失败")
             setSubmitted(false)

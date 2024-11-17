@@ -32,9 +32,13 @@ export default function Callback() {
             .then((res) => {
                 if (res.token) {
                     setToken(res.token);
+                    if (service === 'byrdocs' && res.data) {
+                        window.location.href = res.data
+                    }
                 } else {
                     setError(res.error);
                 }
+                
             })
             .catch((err) => {
                 setError(err.toString());
