@@ -57,7 +57,7 @@ export default function Callback() {
                         <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
                     </Link>
                     <div className="text-center text-2xl md:text-3xl font-bold" style={{ lineHeight: 3 }}>
-                        登录 <code>byrdocs-cli</code>
+                        登录 <code>{service}</code>
                     </div>
                     {error ? (
                         <div>

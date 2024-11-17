@@ -27,13 +27,13 @@ export default function Component() {
                         icon={<Key className="w-6 h-6 dark:text-white" />}
                         title="北京邮电大学统一认证"
                         description='适用于校内用户的便捷认证方式'
-                        to={`/login/${arg.uuid}/${arg.service ?? ''}`}
+                        to={`/login/${arg.uuid}/${service ?? ''}`}
                     />
                     <AuthOption
                         icon={<Github className="w-6 h-6 dark:text-white" />}
                         title="GitHub 认证"
                         description='仅限 byrdocs GitHub 组织成员使用'
-                        to={`/api/auth/github/${arg.uuid}/${arg.service ?? ''}`}
+                        to={`/api/auth/github/${arg.uuid}`}
                         external={true}
                     />
                 </div>
