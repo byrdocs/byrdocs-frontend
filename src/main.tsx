@@ -32,19 +32,19 @@ const router = createBrowserRouter([
     </React.Suspense>,
   },
   {
-    path: "/callback",
+    path: "/callback/:service?",
     element: <React.Suspense fallback={<Loading />}>
       <Callback />
     </React.Suspense>,
   },
   {
-    path: "/auth/:uuid",
+    path: "/auth/:uuid/:service?",
     element: <React.Suspense fallback={<Loading />}>
       <Auth />
     </React.Suspense>,
   },
   {
-    path: "/login/:uuid",
+    path: "/login/:uuid/:service?",
     element: <React.Suspense fallback={<Loading />}>
       <Login />
     </React.Suspense>,

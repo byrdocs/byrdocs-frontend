@@ -12,6 +12,7 @@ function Github({ className }: { className?: string }) {
 
 export default function Component() {
     const arg = useParams()
+    const service = arg.service || 'byrdocs'
     return (
         <div className="flex items-center justify-center min-h-screen bg-background">
             <div className="w-full max-w-md p-6">
@@ -19,20 +20,20 @@ export default function Component() {
                     <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
                 </Link>
                 <div className="text-center text-2xl md:text-3xl font-bold" style={{ lineHeight: 3 }}>
-                    登录 <code>byrdocs-cli</code>
+                    登录 <code>{service}</code>
                 </div>
                 <div className="space-y-4">
                     <AuthOption
                         icon={<Key className="w-6 h-6 dark:text-white" />}
                         title="北京邮电大学统一认证"
                         description='适用于校内用户的便捷认证方式'
-                        to={`/login/${arg.uuid}`}
+                        to={`/login/${arg.uuid}/${arg.service ?? ''}`}
                     />
                     <AuthOption
                         icon={<Github className="w-6 h-6 dark:text-white" />}
                         title="GitHub 认证"
                         description='仅限 byrdocs GitHub 组织成员使用'
-                        to={`/github/${arg.uuid}`}
+                        to={`/github/${arg.uuid}/${arg.service ?? ''}`}
                         external={true}
                     />
                 </div>

@@ -2,14 +2,14 @@ import Loading from '@/assets/loading.svg'
 
 export function LoadingIcon() {
     return (
-        <img src={Loading} alt="loading" className="animate-spin w-20 h-20 mx-auto" />
+        <img src={Loading} alt="loading" className="animate-spin w-20 h-20 mx-auto select-none" />
     )
 }
 
 export function SuccessIcon() {
     return (
         <svg
-            className="mx-auto h-24 w-24 text-green-500"
+            className="mx-auto h-24 w-24 text-green-500 select-none"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -28,7 +28,7 @@ export function SuccessIcon() {
 export function ErrorIcon() {
     return (
         <svg
-            className="mx-auto h-24 w-24 text-red-500"
+            className="mx-auto h-24 w-24 text-red-500 select-none"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

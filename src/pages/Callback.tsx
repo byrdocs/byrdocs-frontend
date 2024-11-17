@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Link } from "react-router-dom";
 import { toast } from 'sonner';
 import { ErrorIcon, LoadingIcon, SuccessIcon } from '@/components/icons';
@@ -9,6 +9,8 @@ export default function Callback() {
     const [error, setError] = useState<string | null>(null);
     const [showDetail, setShowDetail] = useState(false);
     const location = useLocation();
+    const arg = useParams()
+    const service = arg.service || 'byrdocs'
 
     useEffect(() => {
         const query = new URLSearchParams(location.search);
@@ -76,23 +78,25 @@ export default function Callback() {
                                     <div className='text-center text-green-500 font-bold text-xl'>
                                         登录成功
                                     </div>
-                                    {showDetail ? (
-                                        <>
-                                            <div className='mt-11'>
-                                                运行以下命令：
+                                    {service === 'byrdocs-cli' && 
+                                        (showDetail ? (
+                                            <div>
+                                                <div className='mt-11'>
+                                                    运行以下命令：
+                                                </div>
+                                                <code className='block mt-4 bg-gray-100 dark:bg-gray-800 select-all p-2 rounded-md break-all text-gray-700 dark:text-gray-300' onClick={copy}>
+                                                    byrdocs login --token {token}
+                                                </code>
                                             </div>
-                                            <code className='block mt-4 bg-gray-100 dark:bg-gray-800 select-all p-2 rounded-md break-all text-gray-700 dark:text-gray-300' onClick={copy}>
-                                                byrdocs login --token {token}
-                                            </code>
-                                        </>
-                                    ) : (
-                                        <div className='text-center mt-11 text-gray-500 cursor-pointer' onClick={() => {
-                                            setShowDetail(true)
-                                            copy()
-                                        }}>
-                                            手动登录
-                                        </div>
-                                    )}
+                                        ) : (
+                                            <div className='text-center mt-11 text-gray-500 cursor-pointer' onClick={() => {
+                                                setShowDetail(true)
+                                                copy()
+                                            }}>
+                                                手动登录
+                                            </div>
+                                        ))
+                                    }
                                 </>
                             ) : <LoadingIcon />}
                         </div>

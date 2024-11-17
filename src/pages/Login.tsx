@@ -21,6 +21,7 @@ export default function Login() {
     const [password, setPassword] = useState('')
     const [errorMsg, setErrorMsg] = useState('')
     const arg = useParams()
+    const service = arg.service || 'byrdocs'
 
     async function submit(e: FormEvent) {
         e.preventDefault()
@@ -58,7 +59,7 @@ export default function Login() {
                         <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
                     </Link>
                     <div className="text-center text-2xl md:text-3xl font-bold" style={{ lineHeight: 3 }}>
-                        登录 <code>byrdocs-cli</code>
+                        登录 <code>{service}</code>
                     </div>
                     <div>
                         {token ? (
@@ -67,23 +68,25 @@ export default function Login() {
                                 <div className='text-center text-green-500 font-bold text-xl'>
                                     登录成功
                                 </div>
-                                {showDetail ? (
-                                    <div>
-                                        <div className='mt-11'>
-                                            运行以下命令：
+                                {service === 'byrdocs-cli' && 
+                                    (showDetail ? (
+                                        <div>
+                                            <div className='mt-11'>
+                                                运行以下命令：
+                                            </div>
+                                            <code className='block mt-4 bg-gray-100 dark:bg-gray-800 select-all p-2 rounded-md break-all text-gray-700 dark:text-gray-300' onClick={copy}>
+                                                byrdocs login --token {token}
+                                            </code>
                                         </div>
-                                        <code className='block mt-4 bg-gray-100 dark:bg-gray-800 select-all p-2 rounded-md break-all text-gray-700 dark:text-gray-300' onClick={copy}>
-                                            byrdocs login --token {token}
-                                        </code>
-                                    </div>
-                                ) : (
-                                    <div className='text-center mt-11 text-gray-500 cursor-pointer' onClick={() => {
-                                        setShowDetail(true)
-                                        copy()
-                                    }}>
-                                        手动登录
-                                    </div>
-                                )}
+                                    ) : (
+                                        <div className='text-center mt-11 text-gray-500 cursor-pointer' onClick={() => {
+                                            setShowDetail(true)
+                                            copy()
+                                        }}>
+                                            手动登录
+                                        </div>
+                                    ))
+                                }
                             </>
                         ) : <LoadingIcon />}
                     </div>
