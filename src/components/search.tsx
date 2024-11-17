@@ -330,7 +330,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
             </div>
             <Sidebar side="right" className="z-30">
                 {desktopPreview !== "" && (
-                    <div className="absolute top-0 left-0 h-[33px] flex justify-center items-center -translate-x-full bg-[#f9f9fa] rounded-bl-md border-[#b8b8b8] border-[1px] border-r-0 border-t-0">
+                    <div className="absolute top-0 left-0 h-[33px] flex justify-center items-center -translate-x-full bg-[#f9f9fa] dark:bg-[#38383d] dark:border-[#0c0c0d] rounded-bl-md border-[#b8b8b8] border-[1px] border-r-0 border-t-0">
                         <StepForward  strokeWidth={1} className="w-6 h-6 mx-1 cursor-pointer" onClick={() => {
                             setDesktopPreview("")
                             onLayoutPreview(false)
