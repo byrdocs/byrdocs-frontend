@@ -145,7 +145,7 @@ function ItemTitle({ children, filename, href }: { children: React.ReactNode, fi
 function ItemBadge({ children, variant = "secondary", color }: { children: React.ReactNode, variant?: "default" | "secondary", color?: "blue" | "orange" | "green" }) {
     return (
         <Badge className={cn(
-            "px-1 py-0 text-[10px] md:text-sm md:px-2 md:py-[1px] font-light",
+            "px-1 py-0 text-[10px] md:text-sm md:px-2 mb-1 md:py-[1px] font-light",
             {
                 "bg-green-600": color === "green",
                 "bg-orange-600": color === "orange",
