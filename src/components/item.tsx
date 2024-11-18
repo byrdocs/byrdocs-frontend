@@ -288,7 +288,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                     <div className="space-x-1 -my-[1px] md:mt-2">
                                         <ItemBadge variant={"default"} color="green">试卷</ItemBadge>
                                         <ItemBadge>{item.data.filetype}</ItemBadge>
-                                        {item.data.college ? <ItemBadge>{item.data.college}</ItemBadge> : null}
+                                        {item.data.college ? <ItemBadge>{item.data.college.join(", ")}</ItemBadge> : null}
                                         {item.data.filesize ? <ItemBadge>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
                                     </div>
                                 </div>
