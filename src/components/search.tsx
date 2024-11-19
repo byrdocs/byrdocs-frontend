@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Item } from "@/types"
 import { ItemDisplay } from "./item"
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import Fuse from 'fuse.js'
 import { StepForward } from "lucide-react"
 import {
