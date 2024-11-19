@@ -120,6 +120,17 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                 const data = _data.map(item => {
                     if (item.type === 'book') {
                         item.data._isbn = item.data.isbn.map(x => x.replace(/-/g, ""))
+                    } else if (item.type === 'test') {
+                        let time = item.data.time.start;
+                        if (item.data.time.start !== item.data.time.end) {
+                            time = `${item.data.time.start}-${item.data.time.end}`
+                        }
+                        item.data.title = `${time}${
+                            item.data.time.semester === 'First' ? 
+                                " 第一学期" : 
+                                item.data.time.semester === 'Second' ?
+                                    " 第二学期" : ""
+                        } ${item.data.course.name}${item.data.time.stage ? ' ' + item.data.time.stage : ''}`
                     }
                     return item
                 })

@@ -33,7 +33,7 @@ export type Test = {
     college?: string[],
     course: {
         type?: "本科" | "研究生",
-        name?: string,
+        name: string,
     },
     time: {
         start: string,
