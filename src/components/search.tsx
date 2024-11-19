@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Item } from "@/types"
 import { ItemDisplay } from "./item"
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import Fuse from 'fuse.js'
 import { StepForward } from "lucide-react"
 import {
@@ -315,11 +315,15 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                 ))}
                             </div>) : (
                                 <div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
-                                    <div className="text-lg sm:text-2xl font-light m-auto ">
+                                    <div className="text-xl sm:text-2xl font-light m-auto ">
                                         {searchEmpty ? (
                                             <div className="px-2">
-                                                <div className="mb-2">没有找到相关结果</div>
-                                                <div className="text-xs">注意使用全称搜索，例如“高等数学”而非“高数”</div>
+                                                <div className="mb-4">没有找到相关结果</div>
+                                                <div className="text-xs sm:text-base mb-2">注意使用全称搜索，例如“高等数学”而非“高数”</div>
+                                                <hr />
+                                                <div className="text-xs sm:text-base mt-2">
+                                                    已有文件？<a className="text-blue-500 hover:text-blue-400" target="_blank" href="https://github.com/byrdocs/byrdocs-archive/blob/master/CONTRIBUTING.md">上传到 BYR Docs</a>
+                                                </div>
                                             </div>
                                         ) : "搜索书籍、试卷和资料"}
                                     </div>

@@ -44,7 +44,8 @@ export default function About() {
                             BYR Docs 是一个开源项目，你可以在 <A href="https://github.com/byrdocs" >GitHub</A> 上找到我们的代码和数据。
                         </li>
                         <li>
-                            如果您有任何问题或建议、想要贡献资料或者加入我们，请发送邮件至
+                            如果您想要贡献文件，请参阅<A href="https://github.com/byrdocs/byrdocs-archive/blob/master/CONTRIBUTING.md">贡献指南</A>。
+                            有任何问题或建议，请发送邮件至
                             <A href="mailto:contact@byrdocs.org" >contact@byrdocs.org</A>、在
                             <A href="https://github.com/orgs/byrdocs/discussions">GitHub Discussions</A>
                             留言或者加入我们的
