@@ -208,8 +208,8 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                         <div className={cn(
                             "p-2 md:p-4 space-y-1",
                             {
-                                "md:space-y-4": item.data.translators.length === 0,
-                                "md:space-y-2": item.data.translators.length !== 0,
+                                "md:space-y-4": item.data?.translators?.length === 0,
+                                "md:space-y-2": item.data?.translators?.length !== 0,
                             }
                         )}>
                             <div>
@@ -222,8 +222,8 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                 <p className="text-muted-foreground md:text-sm text-xs ">
                                     {item.data.authors.join(", ")}
                                 </p>
-                                {item.data.translators.length > 0 && (<p className="text-muted-foreground text-xs md:text-sm">
-                                    {item.data.translators.join(", ")} 译
+                                {item.data?.translators?.length && item.data?.translators?.length > 0 && (<p className="text-muted-foreground text-xs md:text-sm">
+                                    {item.data.translators?.join(", ")} 译
                                 </p>)}
                                 <div className="space-x-1 -my-[1px] md:mt-2">
                                     <ItemBadge variant={"default"}>书籍</ItemBadge>
