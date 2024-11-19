@@ -16,9 +16,9 @@ export type Item = {
 export type Book = {
     title: string,
     authors: string[],
-    translators: string[],
+    translators?: string[],
     edition?: string,
-    publisher: string,
+    publisher?: string,
     publish_year?: string,
     isbn: string[],
     _isbn: string[],
