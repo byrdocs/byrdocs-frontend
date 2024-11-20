@@ -130,7 +130,10 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                 " 第一学期" : 
                                 item.data.time.semester === 'Second' ?
                                     " 第二学期" : ""
-                        } ${item.data.course.name}${item.data.time.stage ? ' ' + item.data.time.stage : ''}`
+                        } ${item.data.course.name}${item.data.time.stage ? ' ' + item.data.time.stage : ''}${
+                            item.data.content.length == 1 && item.data.content[0] == "答案" ?
+                            "答案" : "试卷" 
+                        }`
                     }
                     return item
                 })
