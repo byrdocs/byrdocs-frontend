@@ -54,7 +54,7 @@ export type Doc = {
     course: {
         type?: "本科" | "研究生",
         name?: string,
-    },
+    }[],
     filesize?: number,
     content: DocContent[]
 }

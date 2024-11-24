@@ -329,7 +329,9 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                             {item.data.title}
                                         </ItemTitle>
                                         <p className="text-muted-foreground md:text-sm text-xs">
-                                            {item.data.course.name} {item.data.course.type ? '(' + item.data.course.type + ')' : ''}
+                                            {item.data.course.map(x => {
+                                                return x.name + (x.type ? '(' + x.type + ')' : '')
+                                            }).join(', ')}
                                         </p>
                                     </div>
                                     <div className="space-x-1 md:mt-2">
