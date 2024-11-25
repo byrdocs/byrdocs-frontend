@@ -41,6 +41,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
     const [preview, setPreview] = useState("")
     const [desktopPreview, setDesktopPreview] = useState("")
     const isMobile = useIsMobile()
+    const [announcements, setAnnouncements] = useState<any[]>([])
 
     if (isMobile) {
         if (desktopPreview) {
@@ -147,6 +148,17 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
             window.removeEventListener("scroll", handleScroll)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    useEffect(() => {
+        fetch("https://blog.byrdocs.org/feed.json")
+            .then(res => res.json())
+            .then(data => {
+                const pages = data?.items
+                    ?.filter((item: any) => item && item?.tags?.includes("主站公告") && item.title && item.summary)
+                    ?.sort((a: any, b: any) => new Date(b.date_modified).getTime() - new Date(a.date_modified).getTime())
+                setAnnouncements(pages)
+            })
     }, [])
 
     useEffect(() => {
@@ -288,11 +300,31 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                             </svg>
                                         </div>)}
+
+                                    
+                                    {!top && announcements && announcements.length && 
+                                        <div className="absolute w-full -bottom-8 translate-y-full space-y-2 max-h-[30vh] overflow-scroll">
+                                            {announcements.map((announcement) => (
+                                                <div
+                                                    className="p-4 w-full rounded-lg border border-gray-400 dark:border-gray-900 text-gray-600 dark:text-gray-500 hover:dark:border-gray-800 shadow-xs hover:shadow-md transition-all cursor-pointer group"
+                                                    onClick={() => window.open(announcement.url)}
+                                                >
+                                                    <h2 className="mb-1 group-hover:underline underline-offset-4 decoration-1 text-base font-bold tracking-tight text-[color:var(--vp-c-brand-light)] dark:text-[color:var(--vp-c-brand-dark)]">
+                                                        <a>{announcement.title}</a>
+                                                    </h2>
+                                                    <p className="font-light text-sm" dangerouslySetInnerHTML={{
+                                                        __html: announcement.summary
+                                                    }}/>
+                                                    <div className="flex justify-between items-center">
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
                 {top && (
                     <>
