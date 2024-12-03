@@ -303,7 +303,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
 
                                     
                                     {!top && announcements && announcements.length && 
-                                        <div className="absolute w-full -bottom-8 translate-y-full space-y-2 max-h-[30vh] overflow-scroll">
+                                        <div className="absolute w-full -bottom-8 translate-y-full space-y-2 max-h-[30vh] overflow-scroll pb-8">
                                             {announcements.map((announcement) => (
                                                 <div
                                                     className="p-4 w-full rounded-lg border border-gray-400 dark:border-gray-900 text-gray-600 dark:text-gray-500 hover:dark:border-gray-800 shadow-xs hover:shadow-md transition-all cursor-pointer group"
