@@ -302,7 +302,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                         </div>)}
 
                                     
-                                    {!top && announcements && announcements.length && 
+                                    {!top && announcements && announcements.length !== 0 && 
                                         <div className="absolute w-full -bottom-8 translate-y-full space-y-2 max-h-[30vh] overflow-scroll pb-8">
                                             {announcements.map((announcement) => (
                                                 <div
