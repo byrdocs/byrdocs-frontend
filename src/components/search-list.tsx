@@ -47,7 +47,7 @@ export function SearchList({
 
     if (!searching || searchResults.length === 0 && debounceing) {
         return (
-            <div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
+            <div className="min-h-[calc(100vh-280px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
                 <div className="text-xl sm:text-2xl font-light m-auto ">
                     搜索书籍、试卷和资料
                 </div>
@@ -56,12 +56,12 @@ export function SearchList({
     }
 
     return searchResults.length !== 0  ?
-        (<div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:mx-auto p-0 md:p-5">
+        (<div className="min-h-[calc(100vh-280px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:mx-auto p-0 md:p-5">
             {searchResults.map((item, index) => (
                 <ItemDisplay key={item.id} item={item as unknown as Item} index={index} onPreview={onPreview} />
             ))}
         </div>) : (
-            <div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
+            <div className="min-h-[calc(100vh-280px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
                 <div className="text-xl sm:text-2xl font-light m-auto ">
                     <div className="px-2">
                         <div className="mb-4">没有找到相关结果</div>

@@ -103,7 +103,7 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
                         }
                     }}
                     className={cn(
-                        "object-cover transition-opacity duration-100 max-w-full max-h-full w-full my-auto " + className,
+                        "object-cover transition-opacity duration-100 max-w-full max-h-full w-full my-auto" + className,
                         {
                             "group-hover:opacity-30": !isError,
                         }
