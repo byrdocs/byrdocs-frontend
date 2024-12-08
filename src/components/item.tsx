@@ -232,9 +232,21 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                 </div>
                             </div>
                             <div className="text-xs md:text-sm md:space-y-1">
-                                <div>
-                                    <span className="font-medium">出版社: </span>
-                                    {item.data.publisher}
+                                <div className={cn(
+                                    "grid",
+                                    {
+                                        "grid-cols-1": !item.data.publish_year,
+                                        "grid-cols-1 md:grid-cols-2 md:gap-1": item.data.publish_year,
+                                    }
+                                )}>
+                                    <div>
+                                        <span className="font-medium">出版社: </span>
+                                        {item.data.publisher}
+                                    </div>
+                                    {item.data.publish_year && <div>
+                                        <span className="font-medium">出版年份: </span>
+                                        {item.data.publish_year}
+                                    </div>}
                                 </div>
                                 <div className={cn(
                                     "grid",
