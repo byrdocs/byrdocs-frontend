@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import { Item } from "@/types"
 import { ItemDisplay } from "./item"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
-import Fuse from 'fuse.js'
+import MiniSearch from 'minisearch'
 import { StepForward } from "lucide-react"
 import {
     Drawer,
@@ -19,6 +19,7 @@ import {
     Sidebar,
 } from "@/components/ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { TabItem, TabList } from "./tab"
 
 export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: boolean) => void }) {
     const location = useLocation()
@@ -28,20 +29,20 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
     const input = useRef<HTMLInputElement>(null)
     const [showClear, setShowClear] = useState(q !== "")
     const showedTip = useRef(false)
-    const [active, setActive] = useState(query.get("c") ? parseInt(query.get("c") || "1") : 1)
+    const [active, setActive] = useState(query.get("c") ?? 'all')
     const [inputFixed, setInputFixed] = useState(false)
     const relative = useRef<HTMLDivElement>(null)
     const navigate = useNavigate()
     const lastSearch = useRef<number>(0)
     const lastSearchTimer = useRef<number>(0)
     const docsData = useRef<Item[]>([])
-    const categoriesData = useRef<Record<string, Item[]>>({})
     const [searchResult, setSearchResult] = useState<Item[]>([])
     const [searchEmpty, setSearchEmpty] = useState(false)
     const [preview, setPreview] = useState("")
     const [desktopPreview, setDesktopPreview] = useState("")
     const isMobile = useIsMobile()
     const [announcements, setAnnouncements] = useState<any[]>([])
+    const miniSearch = useRef<MiniSearch | null>(null)
 
     if (isMobile) {
         if (desktopPreview) {
@@ -63,18 +64,6 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
         input.current?.focus()
         setShowClear(false)
         navigate("/")
-    }
-
-    function updateCategories() {
-        const categories: Record<string, Item[]> = {}
-        docsData.current.forEach(item => {
-            if (!categories[item.type]) {
-                categories[item.type] = []
-            }
-            categories[item.type].push(item)
-        })
-        categoriesData.current = categories
-
     }
 
     useEffect(() => {
@@ -103,45 +92,43 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
         }
         document.addEventListener("keydown", handleKeyDown)
         window.addEventListener("scroll", handleScroll)
-        docsData.current = JSON.parse(localStorage.getItem("metadata") || "[]")
 
         input.current?.focus()
-
-        if (q && docsData.current.length) {
-            if (!top) {
-                setTop(true)
-            }
-            updateCategories()
-            search(active)
-        }
 
         fetch("https://files.byrdocs.org/metadata2.json")
             .then(res => res.json())
             .then((_data: Item[]) => {
                 const data = _data.map(item => {
-                    if (item.type === 'book') {
-                        item.data._isbn = item.data.isbn.map(x => x.replace(/-/g, ""))
-                    } else if (item.type === 'test') {
+                    if (item.type === 'test') {
                         let time = item.data.time.start;
                         if (item.data.time.start !== item.data.time.end) {
                             time = `${item.data.time.start}-${item.data.time.end}`
                         }
-                        item.data.title = `${time}${
-                            item.data.time.semester === 'First' ? 
-                                " 第一学期" : 
+                        item.data.title = `${time}${item.data.time.semester === 'First' ?
+                                " 第一学期" :
                                 item.data.time.semester === 'Second' ?
                                     " 第二学期" : ""
-                        } ${item.data.course.name}${item.data.time.stage ? ' ' + item.data.time.stage : ''}${
-                            item.data.content.length == 1 && item.data.content[0] == "答案" ?
-                            "答案" : "试卷" 
-                        }`
+                            } ${item.data.course.name}${item.data.time.stage ? ' ' + item.data.time.stage : ''}${item.data.content.length == 1 && item.data.content[0] == "答案" ?
+                                "答案" : "试卷"
+                            }`
                     }
                     return item
                 })
 
                 docsData.current = data
-                updateCategories()
-                localStorage.setItem("metadata", JSON.stringify(data))
+                miniSearch.current = new MiniSearch({
+                    fields: ["data.title", "data.authors", "data.translators", "data.publisher",
+                        "data.edition", "data.course.name", "data.course.type", "data.stage", "data. ",
+                        "data.college"],
+                    storeFields: ['type', 'data'],
+                    tokenize: s => s.split(''),
+                    extractField: (document, fieldName) => {
+                        return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
+                    }
+                })
+                console.log(data)
+                miniSearch.current.addAll(data)
+                search(active)
             })
         return () => {
             document.removeEventListener("keydown", handleKeyDown)
@@ -169,42 +156,23 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
         search(active)
     }, [q, docsData])
 
-    function search(active: number = 1) {
+    function search(type: string) {
+        if (!miniSearch.current) return
         setSearchEmpty(false)
-        const search = active === 1 ? docsData.current : categoriesData.current[active === 2 ? "book" : active === 3 ? "test" : "doc"]
-        const fuse = new Fuse(search, {
-            keys: ["data.title", "data.authors", "data.translators", "data.publisher", "data.isbn", "data._isbn",
-                "data.edition", "data.course.name", "data.course.type", "data.stage", "data.content",
-                "id", "data.college"],
-            ignoreLocation: true,
-            useExtendedSearch: false,
-            threshold: 0.4,
-        })
         if (!input.current) return
         if (!input.current.value) {
             setSearchResult([])
             return
         }
         const q = input.current.value
-        const result = fuse.search(q)
+        const result = miniSearch.current.search(q, {
+            filter: (result) => type == 'all' || type == result.type
+        })
         if (result.length === 0) {
             setSearchEmpty(true)
         }
-        setSearchResult(result.map(item => item.item))
+        setSearchResult(result as unknown as Item[])
     }
-
-    function searchActive(active: number) {
-        const q = new URLSearchParams(location.search)
-        if (active === 1) {
-            q.delete("c")
-        } else {
-            q.set("c", active.toString())
-        }
-        navigate("/?" + q.toString())
-        setActive(active)
-        search(active)
-    }
-
 
     return (
         <SidebarProvider open={desktopPreview !== ""} >
@@ -268,13 +236,13 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                         onInput={() => {
                                             setTop(true)
                                             setShowClear(!!input.current?.value)
-                                            search(active)
 
                                             if (lastSearchTimer.current && new Date().getTime() - lastSearch.current < 500) {
                                                 clearTimeout(lastSearchTimer.current)
                                             }
                                             lastSearch.current = new Date().getTime()
                                             lastSearchTimer.current = window.setTimeout(() => {
+                                                search(active)
                                                 const q = new URLSearchParams(location.search)
                                                 if (input.current?.value) {
                                                     q.set("q", input.current?.value)
@@ -282,7 +250,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                                     q.delete("q")
                                                 }
                                                 setQuery(q)
-                                            }, 500)
+                                            }, 300)
                                         }}
                                         ref={input}
                                     />
@@ -300,20 +268,21 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                             </svg>
                                         </div>)}
 
-                                    
-                                    {!top && announcements && announcements.length !== 0 && 
+
+                                    {!top && announcements && announcements.length !== 0 &&
                                         <div className="absolute w-full -bottom-8 translate-y-full space-y-2 max-h-[30vh] overflow-scroll pb-8">
                                             {announcements.map((announcement) => (
                                                 <div
                                                     className="p-4 w-full rounded-lg border border-gray-400 dark:border-gray-900 text-gray-600 dark:text-gray-500 hover:dark:border-gray-800 shadow-xs hover:shadow-md transition-all cursor-pointer group"
                                                     onClick={() => window.open(announcement.url)}
+                                                    key={announcement.id}
                                                 >
                                                     <h2 className="mb-1 group-hover:underline underline-offset-4 decoration-1 text-base font-bold tracking-tight text-[color:var(--vp-c-brand-light)] dark:text-[color:var(--vp-c-brand-dark)]">
                                                         <a>{announcement.title}</a>
                                                     </h2>
                                                     <p className="font-light text-sm" dangerouslySetInnerHTML={{
                                                         __html: announcement.summary
-                                                    }}/>
+                                                    }} />
                                                     <div className="flex justify-between items-center">
                                                     </div>
                                                 </div>
@@ -329,16 +298,21 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                     <>
                         <div className="w-full left-0 border-b-[0.5px] border-muted-foreground pb-0 mx-auto">
                             <div className="flex justify-center space-x-4 md:space-x-8 mt-6 text-2xl font-light">
-                                <TabItem label="全部" active={active == 1} onClick={() => searchActive(1)} />
-                                <TabItem label="书籍" active={active == 2} onClick={() => searchActive(2)} />
-                                <TabItem label="试卷" active={active == 3} onClick={() => searchActive(3)} />
-                                <TabItem label="资料" active={active == 4} onClick={() => searchActive(4)} />
+                                <TabList onSelect={select => {
+                                    setActive(select)
+                                    search(select)
+                                }} active={active}>
+                                    <TabItem value="all">全部</TabItem>
+                                    <TabItem value="book">书籍</TabItem>
+                                    <TabItem value="test">试卷</TabItem>
+                                    <TabItem value="doc">资料</TabItem>
+                                </TabList>
                             </div>
                         </div>
                         {searchResult.length !== 0 ?
                             (<div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:mx-auto p-0 md:p-5">
                                 {searchResult.map((item, index) => (
-                                    <ItemDisplay key={index} item={item} index={index} onPreview={url => {
+                                    <ItemDisplay key={item.id} item={item} index={index} onPreview={url => {
                                         if (isMobile) {
                                             setPreview(url)
                                         } else {
@@ -380,10 +354,10 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
             <Sidebar side="right" className="z-30">
                 {desktopPreview !== "" && (
                     <div className="absolute top-0 left-0 h-[33px] flex justify-center items-center -translate-x-full bg-[#f9f9fa] dark:bg-[#38383d] dark:border-[#0c0c0d] rounded-bl-md border-[#b8b8b8] border-[1px] border-r-0 border-t-0">
-                        <StepForward  strokeWidth={1} className="w-6 h-6 mx-1 cursor-pointer" onClick={() => {
+                        <StepForward strokeWidth={1} className="w-6 h-6 mx-1 cursor-pointer" onClick={() => {
                             setDesktopPreview("")
                             onLayoutPreview(false)
-                        }}/>
+                        }} />
                         <div className="block w-0 h-[70%]" style={{
                             borderLeft: "1px solid rgb(0 0 0 / 0.3)",
                             boxSizing: "border-box",
@@ -401,19 +375,5 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                 </SidebarContent>
             </Sidebar>
         </SidebarProvider>
-    )
-}
-
-function TabItem({ label, active, onClick }: { label: string, active: boolean, onClick: () => void }) {
-    return (
-        <div className={cn(
-            "text-lg cursor-pointer py-1 px-2 md:px-4 transition-colors duration-100",
-            {
-                "text-primary font-bold border-b-2 border-primary": active,
-                "text-muted-foreground": !active,
-            }
-        )} onClick={onClick}>
-            {label}
-        </div>
     )
 }

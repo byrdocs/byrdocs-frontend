@@ -32,12 +32,12 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      fuse.js:
-        specifier: ^7.0.0
-        version: 7.0.0
       lucide-react:
         specifier: ^0.459.0
         version: 0.459.0(react@18.2.0)
+      minisearch:
+        specifier: ^7.1.1
+        version: 7.1.1
       next-themes:
         specifier: ^0.4.3
         version: 0.4.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1221,10 +1221,6 @@ packages:
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
 
-  fuse.js@7.0.0:
-    resolution: {integrity: sha512-14F4hBIxqKvD4Zz/XjDc3y94mNZN6pRv3U13Udo0lNLCWRBUsrMv2xwcF/y/Z5sV6+FQW+/ow68cHpm4sunt8Q==}
-    engines: {node: '>=10'}
-
   get-nonce@1.0.1:
     resolution: {integrity: sha512-FJhYRoDaiatfEkUK8HKlicmu/3SGFD51q3itKDGoSTysQJBnfOcxU5GxnhE1E6soB76MbT0MBtnKJuXyAx+96Q==}
     engines: {node: '>=6'}
@@ -1382,6 +1378,9 @@ packages:
   minipass@7.0.4:
     resolution: {integrity: sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==}
     engines: {node: '>=16 || 14 >=14.17'}
+
+  minisearch@7.1.1:
+    resolution: {integrity: sha512-b3YZEYCEH4EdCAtYP7OlDyx7FdPwNzuNwLQ34SfJpM9dlbBZzeXndGavTrC+VCiRWomL21SWfMc6SCKO/U2ZNw==}
 
   ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
@@ -2789,8 +2788,6 @@ snapshots:
 
   function-bind@1.1.2: {}
 
-  fuse.js@7.0.0: {}
-
   get-nonce@1.0.1: {}
 
   glob-parent@5.1.2:
@@ -2923,6 +2920,8 @@ snapshots:
       brace-expansion: 2.0.1
 
   minipass@7.0.4: {}
+
+  minisearch@7.1.1: {}
 
   ms@2.1.2: {}
 
