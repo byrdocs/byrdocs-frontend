@@ -4,9 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Item } from "@/types"
-import { ItemDisplay } from "./item"
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
-import MiniSearch from 'minisearch'
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { StepForward } from "lucide-react"
 import {
     Drawer,
@@ -20,9 +18,12 @@ import {
 } from "@/components/ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { TabItem, TabList } from "./tab"
+import { SearchList } from "./search-list"
+import { useDebounce, useDebounceFn } from "@/hooks/use-debounce"
+
+const DEBOUNCE_TIME = 300;
 
 export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: boolean) => void }) {
-    const location = useLocation()
     const [query, setQuery] = useSearchParams()
     const q = query.get("q") || ""
     const [top, setTop] = useState(false)
@@ -33,16 +34,16 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
     const [inputFixed, setInputFixed] = useState(false)
     const relative = useRef<HTMLDivElement>(null)
     const navigate = useNavigate()
-    const lastSearch = useRef<number>(0)
-    const lastSearchTimer = useRef<number>(0)
-    const docsData = useRef<Item[]>([])
-    const [searchResult, setSearchResult] = useState<Item[]>([])
-    const [searchEmpty, setSearchEmpty] = useState(false)
+    const [docsData, setDocsData] = useState<Item[]>([])
+    const [searching, setSearching] = useState(false)
     const [preview, setPreview] = useState("")
     const [desktopPreview, setDesktopPreview] = useState("")
     const isMobile = useIsMobile()
     const [announcements, setAnnouncements] = useState<any[]>([])
-    const miniSearch = useRef<MiniSearch | null>(null)
+    const updateQeury = useDebounceFn(setQuery, DEBOUNCE_TIME)
+    
+    const [keyword, setKeyword] = useState(q)
+    const [debouncedKeyword, debouncing] = useDebounce(keyword, DEBOUNCE_TIME)
 
     if (isMobile) {
         if (desktopPreview) {
@@ -60,7 +61,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
 
     function reset() {
         setTop(false)
-        input.current?.value && (input.current.value = "")
+        setKeyword("")
         input.current?.focus()
         setShowClear(false)
         navigate("/")
@@ -114,21 +115,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                     }
                     return item
                 })
-
-                docsData.current = data
-                miniSearch.current = new MiniSearch({
-                    fields: ["data.title", "data.authors", "data.translators", "data.publisher",
-                        "data.edition", "data.course.name", "data.course.type", "data.stage", "data. ",
-                        "data.college"],
-                    storeFields: ['type', 'data'],
-                    tokenize: s => s.split(''),
-                    extractField: (document, fieldName) => {
-                        return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
-                    }
-                })
-                console.log(data)
-                miniSearch.current.addAll(data)
-                search(active)
+                setDocsData(data)
             })
         return () => {
             document.removeEventListener("keydown", handleKeyDown)
@@ -151,28 +138,9 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
         if (!top && q) {
             setTop(true)
         }
-        if (input.current)
-            input.current.value = q
-        search(active)
-    }, [q, docsData])
-
-    function search(type: string) {
-        if (!miniSearch.current) return
-        setSearchEmpty(false)
-        if (!input.current) return
-        if (!input.current.value) {
-            setSearchResult([])
-            return
-        }
-        const q = input.current.value
-        const result = miniSearch.current.search(q, {
-            filter: (result) => type == 'all' || type == result.type
-        })
-        if (result.length === 0) {
-            setSearchEmpty(true)
-        }
-        setSearchResult(result as unknown as Item[])
-    }
+        setKeyword(q)
+        setSearching(true)
+    }, [])
 
     return (
         <SidebarProvider open={desktopPreview !== ""} >
@@ -231,36 +199,24 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                                 "pr-12": showClear,
                                             }
                                         )}
-                                        defaultValue={q}
                                         placeholder="搜索书籍、试卷和资料..."
-                                        onInput={() => {
+                                        value={keyword}
+                                        onInput={e => {
+                                            const value = e.currentTarget.value
+                                            setKeyword(value)
+                                            updateQeury(new URLSearchParams({ q: value }))
                                             setTop(true)
-                                            setShowClear(!!input.current?.value)
-
-                                            if (lastSearchTimer.current && new Date().getTime() - lastSearch.current < 500) {
-                                                clearTimeout(lastSearchTimer.current)
-                                            }
-                                            lastSearch.current = new Date().getTime()
-                                            lastSearchTimer.current = window.setTimeout(() => {
-                                                search(active)
-                                                const q = new URLSearchParams(location.search)
-                                                if (input.current?.value) {
-                                                    q.set("q", input.current?.value)
-                                                } else {
-                                                    q.delete("q")
-                                                }
-                                                setQuery(q)
-                                            }, 300)
+                                            setSearching(true)
+                                            setShowClear(!!value)
                                         }}
                                         ref={input}
                                     />
                                     {showClear && (
                                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6  text-muted-foreground cursor-pointer" onClick={() => {
-                                            input.current?.value && (input.current.value = "")
                                             input.current?.focus()
                                             setShowClear(false)
-                                            setSearchEmpty(false)
-                                            setSearchResult([])
+                                            setSearching(false)
+                                            setKeyword("")
                                             setQuery(new URLSearchParams())
                                         }}>
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
@@ -300,7 +256,6 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                             <div className="flex justify-center space-x-4 md:space-x-8 mt-6 text-2xl font-light">
                                 <TabList onSelect={select => {
                                     setActive(select)
-                                    search(select)
                                 }} active={active}>
                                     <TabItem value="all">全部</TabItem>
                                     <TabItem value="book">书籍</TabItem>
@@ -309,34 +264,21 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                 </TabList>
                             </div>
                         </div>
-                        {searchResult.length !== 0 ?
-                            (<div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:mx-auto p-0 md:p-5">
-                                {searchResult.map((item, index) => (
-                                    <ItemDisplay key={item.id} item={item} index={index} onPreview={url => {
-                                        if (isMobile) {
-                                            setPreview(url)
-                                        } else {
-                                            setDesktopPreview(url)
-                                            onLayoutPreview(true)
-                                        }
-                                    }} />
-                                ))}
-                            </div>) : (
-                                <div className="min-h-[calc(100vh-320px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
-                                    <div className="text-xl sm:text-2xl font-light m-auto ">
-                                        {searchEmpty ? (
-                                            <div className="px-2">
-                                                <div className="mb-4">没有找到相关结果</div>
-                                                <div className="text-xs sm:text-base mb-2">注意使用全称搜索，例如“高等数学”而非“高数”</div>
-                                                <hr />
-                                                <div className="text-xs sm:text-base mt-2">
-                                                    已有文件？<a className="text-blue-500 hover:text-blue-400" target="_blank" href="https://github.com/byrdocs/byrdocs-archive/blob/master/CONTRIBUTING.md">上传到 BYR Docs</a>
-                                                </div>
-                                            </div>
-                                        ) : "搜索书籍、试卷和资料"}
-                                    </div>
-                                </div>
-                            )}
+                        <SearchList
+                            documents={docsData}
+                            keyword={debouncedKeyword}
+                            debounceing={debouncing}
+                            category={active}
+                            searching={searching}
+                            onPreview={url => {
+                                if (isMobile) {
+                                    setPreview(url)
+                                } else {
+                                    setDesktopPreview(url)
+                                    onLayoutPreview(true)
+                                }
+                            }}
+                        />
                     </>
                 )}
                 <Drawer open={preview !== ""} onClose={() => setPreview("")}>
