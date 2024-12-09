@@ -27,6 +27,13 @@ export type Book = {
 
 type TestContent = '原题' | '答案'
 
+export type Time = {
+    start: string,
+    end: string,
+    semester?: 'First' | 'Second',
+    stage?: '期中' | '期末'
+}
+
 export type Test = {
     title: string,
     college?: string[],
@@ -34,12 +41,7 @@ export type Test = {
         type?: "本科" | "研究生",
         name: string,
     },
-    time: {
-        start: string,
-        end: string,
-        semester?: 'First' | 'Second',
-        stage?: '期中' | '期末'
-    },
+    time: Time,
     filetype: 'pdf',
     content: TestContent[],
     filesize: number
