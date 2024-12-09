@@ -5,7 +5,7 @@ import MiniSearch from "minisearch"
 import { detect_search_type } from "@/lib/search"
 import { Badge } from "@/components/ui/badge"
 import { MultiSelect, MultiSelectOption } from "./ui/multiselect"
-import { arrayEqual, cn } from "@/lib/utils"
+import { arrayEqual } from "@/lib/utils"
 
 const minisearch = new MiniSearch({
     fields: ["data.title", "data.authors", "data.translators", "data.publisher",
