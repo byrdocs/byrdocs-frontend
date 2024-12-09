@@ -153,9 +153,9 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                     }
                 )}>
                     <div className={cn(
-                        "w-full pb-24",
+                        "w-full",
                         {
-                            "my-auto": !top,
+                            "my-auto pb-24": !top
                         }
                     )}>
                         <div className={cn(

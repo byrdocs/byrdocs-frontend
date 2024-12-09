@@ -8,7 +8,7 @@ export function Logo({
     switch (size) {
         case 0:
             return (
-                <h1 className={`text-3xl md:text-4xl text-center font-bold italic select-none ` + className} style={{ fontFamily: "'Saira Variable', sans-serif" }}>
+                <h1 className={`text-3xl md:text-4xl  text-center font-bold italic select-none ` + className} style={{ fontFamily: "'Saira Variable', sans-serif" }}>
                     byrdocs<span className={`text-xl md:text-2xl`}>.org</span>
                 </h1>
             )
