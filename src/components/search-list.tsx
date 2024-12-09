@@ -2,6 +2,7 @@ import { Item } from "@/types"
 import { useEffect, useState, } from "react"
 import { ItemDisplay } from "./item"
 import MiniSearch from "minisearch"
+import { detect_search_type } from "@/lib/search"
 
 const minisearch = new MiniSearch({
     fields: ["data.title", "data.authors", "data.translators", "data.publisher",
@@ -33,6 +34,7 @@ export function SearchList({
 }) {
     const [searchResults, setSearchResults] = useState<Item[]>([]);
     const [miniSearching, setMiniSearching] = useState(false);
+    const [searchType, setSearchType] = useState<'isbn' | 'md5' | 'normal'>('normal')
 
     useEffect(() => {
         minisearch.addAll(documents)
@@ -44,10 +46,22 @@ export function SearchList({
     useEffect(() => {
         setMiniSearching(true)
         onSearching(true)
-        const results = minisearch.search(keyword, {
-            filter: (result) => category === 'all' || category === result.type
-        });
-        setSearchResults(results as unknown as Item[])
+
+        const type = detect_search_type(keyword)
+        let results: Item[] = []
+
+        if (type == 'isbn') {
+            const searchIsbn = keyword.replaceAll('-', '')
+            results = documents.filter((item) => item.type === 'book' && item.data.isbn.some(isbn => isbn.replaceAll('-', '') === searchIsbn))
+        } else if (type == 'md5') {
+            results = documents.filter((item) => item.id === keyword)
+        } else {
+            results = minisearch.search(keyword, {
+                filter: (result) => category === 'all' || category === result.type
+            }) as unknown as Item[];
+        }
+
+        setSearchResults(results)
         onSearching(false)
         setMiniSearching(false)
     }, [keyword, category, documents]);

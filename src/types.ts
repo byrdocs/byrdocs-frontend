@@ -21,8 +21,7 @@ export type Book = {
     publisher?: string,
     publish_year?: string,
     isbn: string[],
-    _isbn: string[],
-    filetype: string,
+    filetype: 'pdf',
     filesize?: number,
 }
 
@@ -41,7 +40,7 @@ export type Test = {
         semester?: 'First' | 'Second',
         stage?: '期中' | '期末'
     },
-    filetype: string,
+    filetype: 'pdf',
     content: TestContent[],
     filesize: number
 }
@@ -50,7 +49,7 @@ export type DocContent = '思维导图' | '题库' | '答案' | '知识点' | '�
 
 export type Doc = {
     title: string,
-    filetype: string,
+    filetype: 'pdf' | 'zip',
     course: {
         type?: "本科" | "研究生",
         name?: string,
