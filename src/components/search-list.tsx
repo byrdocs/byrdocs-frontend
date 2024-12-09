@@ -3,6 +3,7 @@ import { useEffect, useState, } from "react"
 import { ItemDisplay } from "./item"
 import MiniSearch from "minisearch"
 import { detect_search_type } from "@/lib/search"
+import { Badge } from "@/components/ui/badge"
 
 const minisearch = new MiniSearch({
     fields: ["data.title", "data.authors", "data.translators", "data.publisher",
@@ -51,11 +52,17 @@ export function SearchList({
         let results: Item[] = []
 
         if (type == 'isbn') {
+            setSearchType('isbn')
             const searchIsbn = keyword.replaceAll('-', '')
-            results = documents.filter((item) => item.type === 'book' && item.data.isbn.some(isbn => isbn.replaceAll('-', '') === searchIsbn))
+            results = documents.filter((item) => 
+                item.type === 'book' && item.data.isbn.some(isbn => isbn.replaceAll('-', '') === searchIsbn &&
+                    (category === 'all' || category === item.type)
+            ))
         } else if (type == 'md5') {
-            results = documents.filter((item) => item.id === keyword)
+            setSearchType('md5')
+            results = documents.filter((item) => item.id === keyword && (category === 'all' || category === item.type))
         } else {
+            setSearchType('normal')
             results = minisearch.search(keyword, {
                 filter: (result) => category === 'all' || category === result.type
             }) as unknown as Item[];
@@ -77,7 +84,17 @@ export function SearchList({
     }
 
     return searchResults.length !== 0  ?
-        (<div className="min-h-[calc(100vh-280px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:mx-auto p-0 md:p-5">
+        (<div className="min-h-[calc(100vh-280px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:mx-auto p-0 md:p-5 md:py-3">
+            {
+                searchType === 'isbn' ? 
+                    <Badge className="text-muted-foreground" variant={"outline"}>
+                        搜索类型：ISBN
+                    </Badge> : 
+                searchType === 'md5' ?
+                    <Badge className="text-muted-foreground" variant={"outline"}>
+                        搜索类型：MD5
+                    </Badge> : null
+            }
             {searchResults.map((item, index) => (
                 <ItemDisplay key={item.id} item={item as unknown as Item} index={index} onPreview={onPreview} />
             ))}

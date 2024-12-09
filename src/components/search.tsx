@@ -21,7 +21,7 @@ import { TabItem, TabList } from "./tab"
 import { SearchList } from "./search-list"
 import { useDebounce, useDebounceFn } from "@/hooks/use-debounce"
 
-const DEBOUNCE_TIME = 300;
+const DEBOUNCE_TIME = 500;
 
 export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: boolean) => void }) {
     const [query, setQuery] = useSearchParams()
@@ -285,7 +285,9 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                     onLayoutPreview(true)
                                 }
                             }}
-                            onSearching={setMiniSearching}
+                            onSearching={(searching) => {
+                                setMiniSearching(searching)
+                            }}
                         />
                     </>
                 )}
