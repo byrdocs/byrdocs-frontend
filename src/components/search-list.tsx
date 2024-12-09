@@ -20,7 +20,8 @@ export function SearchList({
     searching,
     category,
     debounceing,
-    onPreview
+    onPreview,
+    onSearching,
 }: {
     keyword: string
     documents: Item[]
@@ -28,8 +29,10 @@ export function SearchList({
     debounceing: boolean
     category: string
     onPreview: (url: string) => void
+    onSearching: (searching: boolean) => void
 }) {
     const [searchResults, setSearchResults] = useState<Item[]>([]);
+    const [miniSearching, setMiniSearching] = useState(false);
 
     useEffect(() => {
         minisearch.addAll(documents)
@@ -39,13 +42,17 @@ export function SearchList({
     }, [documents])
 
     useEffect(() => {
+        setMiniSearching(true)
+        onSearching(true)
         const results = minisearch.search(keyword, {
             filter: (result) => category === 'all' || category === result.type
         });
         setSearchResults(results as unknown as Item[])
+        onSearching(false)
+        setMiniSearching(false)
     }, [keyword, category, documents]);
 
-    if (!searching || searchResults.length === 0 && debounceing) {
+    if (!searching || searchResults.length === 0 && (debounceing || miniSearching)) {
         return (
             <div className="min-h-[calc(100vh-280px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
                 <div className="text-xl sm:text-2xl font-light m-auto ">
