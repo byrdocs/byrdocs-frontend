@@ -103,7 +103,7 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
                         }
                     }}
                     className={cn(
-                        "object-cover transition-opacity duration-100 max-w-full max-h-full w-full my-auto " + className,
+                        "object-cover transition-opacity duration-100 max-w-full max-h-full w-full my-auto" + className,
                         {
                             "group-hover:opacity-30": !isError,
                         }
@@ -300,7 +300,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                     <div className="space-x-1 -my-[1px] md:mt-2">
                                         <ItemBadge variant={"default"} color="green">试卷</ItemBadge>
                                         <ItemBadge>{item.data.filetype}</ItemBadge>
-                                        {item.data.college ? item.data.college.map(x => <ItemBadge>{x}</ItemBadge>) : null}
+                                        {item.data.college ? item.data.college.map(x => <ItemBadge key={x}>{x}</ItemBadge>) : null}
                                         {item.data.filesize ? <ItemBadge>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
                                     </div>
                                 </div>
