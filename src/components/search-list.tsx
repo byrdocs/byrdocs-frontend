@@ -4,6 +4,8 @@ import { ItemDisplay } from "./item"
 import MiniSearch from "minisearch"
 import { detect_search_type } from "@/lib/search"
 import { Badge } from "@/components/ui/badge"
+import { MultiSelect, MultiSelectOption } from "./ui/multiselect"
+import { Button } from "./ui/button"
 
 const minisearch = new MiniSearch({
     fields: ["data.title", "data.authors", "data.translators", "data.publisher",
@@ -36,6 +38,11 @@ export function SearchList({
     const [searchResults, setSearchResults] = useState<Item[]>([]);
     const [miniSearching, setMiniSearching] = useState(false);
     const [searchType, setSearchType] = useState<'isbn' | 'md5' | 'normal'>('normal')
+    const [pageSize, setPageSize] = useState(50)
+
+    useEffect(() => {
+        setPageSize(50)
+    }, [keyword, documents, searching, category])
 
     useEffect(() => {
         minisearch.addAll(documents)
@@ -54,10 +61,10 @@ export function SearchList({
         if (type == 'isbn') {
             setSearchType('isbn')
             const searchIsbn = keyword.replaceAll('-', '')
-            results = documents.filter((item) => 
+            results = documents.filter((item) =>
                 item.type === 'book' && item.data.isbn.some(isbn => isbn.replaceAll('-', '') === searchIsbn &&
                     (category === 'all' || category === item.type)
-            ))
+                ))
         } else if (type == 'md5') {
             setSearchType('md5')
             results = documents.filter((item) => item.id === keyword && (category === 'all' || category === item.type))
@@ -65,9 +72,8 @@ export function SearchList({
             setSearchType('normal')
             results = minisearch.search(keyword, {
                 filter: (result) => category === 'all' || category === result.type
-            }) as unknown as Item[];
+            }).filter((item) => item.score > 5) as unknown as Item[];
         }
-
         setSearchResults(results)
         onSearching(false)
         setMiniSearching(false)
@@ -75,31 +81,44 @@ export function SearchList({
 
     if (!searching || searchResults.length === 0 && (debounceing || miniSearching)) {
         return (
-            <div className="min-h-[calc(100vh-280px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
+            <div className="min-h-[calc(100vh-260px)] sm:min-h-[calc(100vh-277px)] md:sm:min-h-[calc(100vh-310px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
                 <div className="text-xl sm:text-2xl font-light m-auto ">
                     搜索书籍、试卷和资料
+                    {/* <div className="sm:hidden">xs</div>
+                    <div className="hidden sm:block md:hidden">sm</div>
+                    <div className="hidden md:block lg:hidden">md</div>
+                    <div className="hidden lg:block xl:hidden">lg</div>
+                    <div className="hidden xl:block">xl</div> */}
                 </div>
             </div>
         )
     }
 
-    return searchResults.length !== 0  ?
-        (<div className="min-h-[calc(100vh-280px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:mx-auto p-0 md:p-5 md:py-3">
+    return searchResults.length !== 0 ?
+        (<div className="min-h-[calc(100vh-260px)] sm:min-h-[calc(100vh-277px)] md:sm:min-h-[calc(100vh-310px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:mx-auto p-0 md:p-5 md:py-3">
             {
-                searchType === 'isbn' ? 
+                searchType === 'isbn' ?
                     <Badge className="text-muted-foreground" variant={"outline"}>
                         搜索类型：ISBN
-                    </Badge> : 
-                searchType === 'md5' ?
-                    <Badge className="text-muted-foreground" variant={"outline"}>
-                        搜索类型：MD5
-                    </Badge> : null
+                    </Badge> :
+                    searchType === 'md5' ?
+                        <Badge className="text-muted-foreground" variant={"outline"}>
+                            搜索类型：MD5
+                        </Badge> : null
             }
-            {searchResults.map((item, index) => (
+            {(searchResults.slice(0, pageSize)).map((item, index) => (
                 <ItemDisplay key={item.id} item={item as unknown as Item} index={index} onPreview={onPreview} />
             ))}
+
+            {searchResults.length > pageSize && (
+                <div className="flex">
+                    <Button onClick={() => setPageSize(pageSize + 50)} className="mx-auto mt-6" variant={"outline"}>
+                        显示更多
+                    </Button>
+                </div>
+            )}
         </div>) : (
-            <div className="min-h-[calc(100vh-280px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
+            <div className="min-h-[calc(100vh-260px)] sm:min-h-[calc(100vh-277px)] md:sm:min-h-[calc(100vh-310px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
                 <div className="text-xl sm:text-2xl font-light m-auto ">
                     <div className="px-2">
                         <div className="mb-4">没有找到相关结果</div>

@@ -69,6 +69,16 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
     }
 
     useEffect(() => {
+        if (q) {
+            setKeyword(q)
+            setSearching(true)
+        } else {
+            setKeyword("")
+            setSearching(false)
+        }
+    }, [q])
+
+    useEffect(() => {
         function handleKeyDown(e: KeyboardEvent) {
             if (document.activeElement !== document.body) return
             if (e.key === "/") {
