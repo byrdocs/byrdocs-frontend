@@ -153,7 +153,7 @@ function MultiSelect({ children, onChange, selected, className, search, placehol
             <div className='relative'>
               <div className='overflow-clip fixed h-4 w-[calc(100%-2px)] z-10'>
                 <div className={cn(
-                    'flex justify-center items-center h-4',
+                    'flex justify-center items-center h-4 rounded-md',
                     {
                       'bg-background': showChevronUp,
                       'bg-transparent border-t border-background': !showChevronUp
@@ -189,7 +189,7 @@ function MultiSelect({ children, onChange, selected, className, search, placehol
                   </MultiSelectContext.Provider>
                 </CommandGroup>
               </CommandList>
-              <div className='rounded-b-md overflow-clip fixed bottom-0 h-4 w-[calc(100%-2px)]'>
+              <div className='rounded-b-md overflow-clip fixed bottom-px h-4 w-[calc(100%-2px)]'>
                 <div className={cn(
                     'flex justify-center items-center h-4',
                     {
