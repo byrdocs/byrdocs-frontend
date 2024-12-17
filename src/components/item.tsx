@@ -36,7 +36,7 @@ function ItemCard({ children, onPreview, canPreview }: { children: React.ReactNo
                 <div className="md:opacity-0 group-hover/card:opacity-100 transition-opacity duration-100 absolute z-10 left-0 top-[5px] italic text-muted-foreground bg-muted px-1 rounded-r-md shadow-sm font-mono text-sm md:text-md">
                     <button className="inline-block cursor-pointer" onClick={onPreview}>
                         <Preview />
-                    </button>        
+                    </button>
                 </div>
             )}
             <div className="grid grid-cols-[112.5px_1fr] md:grid-cols-[150px_1fr] gap-2 md:gap-6 min-h-[150px] md:min-h-[200px]">
@@ -50,7 +50,7 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
     const [isError, setIsError] = useState(false);
 
     return (
-        <div className="relative group h-full my-auto" onClick={() => {
+        <div className="relative group my-auto" onClick={() => {
             if (!isError && onClick) {
                 onClick();
             }
@@ -94,7 +94,7 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
                                                 },
                                                 cancel: {
                                                     label: "关闭",
-                                                    onClick: () => {}
+                                                    onClick: () => { }
                                                 }
                                             })
                                         }
@@ -142,13 +142,24 @@ function ItemTitle({ children, filename, href }: { children: React.ReactNode, fi
     );
 }
 
-function ItemBadge({ children, variant = "secondary", color }: { children: React.ReactNode, variant?: "default" | "secondary", color?: "blue" | "orange" | "green" }) {
+function ItemBadge(
+    { children, variant = "default", color }: 
+    {
+        children: React.ReactNode,
+        variant?: "default" | "secondary",
+        color?: "blue" | "orange" | "green" | "yellow" | "sky" | "rose"
+    }
+) {
     return (
         <Badge className={cn(
-            "px-1 py-0 text-[10px] md:text-sm md:px-2 mb-1 md:py-[1px] font-light",
+            "px-1 py-0 text-[10px] md:text-sm md:px-2 md:mb-1 md:py-[1px] font-light cursor-pointer hover:opacity-80",
             {
-                "bg-green-600": color === "green",
-                "bg-orange-600": color === "orange",
+                "bg-green-600 hover:bg-green-600": color === "green",
+                "bg-orange-600 hover:bg-orange-600": color === "orange",
+                "bg-yellow-500 hover:bg-yellow-500": color === "yellow",
+                "bg-blue-600 hover:bg-blue-600": color === "blue",
+                "bg-sky-500 hover:bg-sky-500": color === "sky",
+                "bg-rose-500 hover:bg-rose-500": color === "rose",
             }
         )}
             variant={variant}
@@ -193,7 +204,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
         <>
             {item.type == "book" ?
                 (
-                    <ItemCard 
+                    <ItemCard
                         onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
                         canPreview={item.data.filetype === "pdf"}
                     >
@@ -226,9 +237,9 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                     {item.data.translators?.join(", ")} 译
                                 </p>)}
                                 <div className="space-x-1 -my-[1px] md:mt-2">
-                                    <ItemBadge variant={"default"}>书籍</ItemBadge>
-                                    <ItemBadge>{item.data.filetype}</ItemBadge>
-                                    {item.data.filesize ? <ItemBadge>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
+                                    <ItemBadge>书籍</ItemBadge>
+                                    <ItemBadge color={"yellow"}>{item.data.filetype}</ItemBadge>
+                                    {item.data.filesize ? <ItemBadge color={"rose"}>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
                                 </div>
                             </div>
                             <div className="text-xs md:text-sm md:space-y-1">
@@ -272,7 +283,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                 :
                 item.type == "test" ?
                     (
-                        <ItemCard 
+                        <ItemCard
                             onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
                             canPreview={item.data.filetype === "pdf"}
                         >
@@ -298,10 +309,10 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                         {item.data.course.name} {item.data.course.type ? '(' + item.data.course.type + ')' : ''}
                                     </p>
                                     <div className="space-x-1 -my-[1px] md:mt-2">
-                                        <ItemBadge variant={"default"} color="green">试卷</ItemBadge>
-                                        <ItemBadge>{item.data.filetype}</ItemBadge>
-                                        {item.data.college ? item.data.college.map(x => <ItemBadge key={x}>{x}</ItemBadge>) : null}
-                                        {item.data.filesize ? <ItemBadge>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
+                                        <ItemBadge color="green">试卷</ItemBadge>
+                                        <ItemBadge color="yellow">{item.data.filetype}</ItemBadge>
+                                        {item.data.filesize ? <ItemBadge color={"rose"}>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
+                                        {item.data.college ? item.data.college.map(x => <ItemBadge variant="secondary" key={x}>{x}</ItemBadge>) : null}
                                     </div>
                                 </div>
                                 <div className="text-xs md:text-sm md:space-y-1">
@@ -311,7 +322,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                     </div>
                                     <div>
                                         <span className="font-medium">类别: </span>
-                                        {typeof(item.data.content) === "string" ? item.data.content : item.data.content.join(", ")}
+                                        {typeof (item.data.content) === "string" ? item.data.content : item.data.content.join(", ")}
                                     </div>
                                 </div>
                             </div>
@@ -320,7 +331,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
 
                     item.type == "doc" ?
                         (
-                            <ItemCard 
+                            <ItemCard
                                 onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
                                 canPreview={item.data.filetype === "pdf"}
                             >
@@ -347,9 +358,9 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                         </p>
                                     </div>
                                     <div className="space-x-1 md:mt-2">
-                                        <ItemBadge variant={"default"} color="orange">资料</ItemBadge>
-                                        <ItemBadge>{item.data.filetype}</ItemBadge>
-                                        {item.data.filesize ? <ItemBadge>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
+                                        <ItemBadge color="orange">资料</ItemBadge>
+                                        {item.data.filesize ? <ItemBadge color={"rose"}>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
+                                        <ItemBadge color={item.data.filetype === "pdf" ? "yellow" : "sky"}>{item.data.filetype}</ItemBadge>
                                     </div>
                                     <div className="text-xs md:text-sm md:space-y-1">
                                         <div>
