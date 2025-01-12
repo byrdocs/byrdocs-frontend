@@ -20,7 +20,6 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { TabItem, TabList } from "./tab"
 import { SearchList } from "./search-list"
 import { useDebounce, useDebounceFn } from "@/hooks/use-debounce"
-import { useStorage } from "@/hooks/use-storage"
 
 const DEBOUNCE_TIME = 500;
 
