@@ -141,7 +141,7 @@ export function SearchList({
             course: Array.from(courses).sort(),
             year: Array.from(timeRange).sort().reverse(),
             docType: Array.from(docTypes).sort(),
-            type: ['原题', '答案', '原题+答案']
+            type: ['期中', '期末', '其他']
         })
         setSearchResults(results)
         onSearching(false)
@@ -154,12 +154,7 @@ export function SearchList({
                 if (filter.college.length > 0 && !filter.college.some(college => item.data.college?.includes(college))) return false
                 if (filter.course.length > 0 && !filter.course.some(course => item.data.course.name === course)) return false
                 if (filter.year.length > 0 && !filter.year.some(year => item.data.time.start === year || item.data.time.end === year)) return false
-                if (filter.type.length > 0) {
-                    const choice = filter.type[0]
-                    if (choice == '原题' && !arrayEqual(item.data.content, ['原题'])) return false
-                    if (choice == '答案' && !arrayEqual(item.data.content, ['答案'])) return false
-                    if (choice == '原题+答案' && !arrayEqual(item.data.content, ['原题', '答案'])) return false
-                }
+                if (filter.type.length > 0 && !filter.type.some(type => (item.data.time.stage ?? '其他') === type)) return false
             } else if (item.type === 'doc') {
                 if (filter.course.length > 0 && !filter.course.some(course => item.data.course.some(c => c.name === course))) return false
                 if (filter.docType.length > 0 && !filter.docType.some(type => item.data.content.includes(type as any))) return false
@@ -233,8 +228,7 @@ export function SearchList({
                                     <MultiSelect
                                         selected={filter.type}
                                         key="type"
-                                        single={true}
-                                        placeholder="类别"
+                                        placeholder="阶段"
                                         onChange={(selected) => {
                                             setFilter({ ...filter, type: selected })
                                         }}

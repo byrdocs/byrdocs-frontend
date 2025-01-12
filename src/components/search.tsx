@@ -47,9 +47,6 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
     const [debouncedKeyword, debouncing] = useDebounce(keyword, DEBOUNCE_TIME)
     const [miniSearching, setMiniSearching] = useState(false);
 
-    // Feat: filter
-    const [leartFilter, setLearnFilter] = useStorage('leartFilter', false)
-
     if (isMobile) {
         if (desktopPreview) {
             onLayoutPreview(false)
@@ -279,28 +276,10 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                 <TabList onSelect={select => {
                                     setActive(select)
                                     setQuery(new URLSearchParams({ c: select, q: keyword }))
-
-                                    if (select === "test" && !leartFilter) {
-                                        toast.info("使用筛选功能缩小搜索范围", {
-                                            position: 'top-center',
-                                            duration: 999999999,
-                                            closeButton: true,
-                                            style: {
-                                                color: "#3472d6",
-                                                border: "1px solid rgba(52, 114, 214, 0.29)"
-                                            }
-                                        })
-                                        setLearnFilter(true)
-                                    }
                                 }} active={active}>
                                     <TabItem value="all">全部</TabItem>
                                     <TabItem value="book">书籍</TabItem>
-                                    <TabItem value="test" className={cn({
-                                        [`relative after:animate-ping after:absolute after:inline-flex after:right-1
-                                        after:h-2 after:w-2 after:rounded-full after:bg-primary after:opacity-75
-                                        before:absolute before:inline-flex before:right-1
-                                        before:h-2 before:w-2 before:rounded-full before:bg-primary before:opacity-75`]: !leartFilter
-                                    })}>试卷</TabItem>
+                                    <TabItem value="test">试卷</TabItem>
                                     <TabItem value="doc">资料</TabItem>
                                 </TabList>
                             </div>
