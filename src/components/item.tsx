@@ -3,7 +3,7 @@ import {
 } from "@/components/ui/card"
 
 import { Badge } from "@/components/ui/badge"
-import { Item } from "@/types";
+import { Item, Test } from "@/types";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
@@ -15,6 +15,7 @@ import {
     DialogTitle
 } from "@/components/ui/dialog"
 import { toast } from "sonner";
+import { ExternalIcon } from "./icons";
 
 
 const prefix = "/files";
@@ -126,33 +127,40 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
 
 function ItemTitle({ children, filename, href }: { children: React.ReactNode, filename: string, href: string }) {
     const url = new URL(href, location.origin)
-    const search = url.searchParams
-    search.set("filename", filename)
-    const newHref = href.replace(url.search, "") + "?" + search.toString()
+    let external = url.origin !== location.origin
+    if (url.origin === "https://byrdocs.org") {
+        url.searchParams.set("filename", filename)
+        url.protocol = location.protocol
+        url.hostname = location.hostname
+        url.port = location.port
+        external = false
+    }
     return (
         <h3 className="md:text-2xl font-bold mb-1">
             <a
                 className="underline-offset-2 hover:underline cursor-pointer"
-                href={newHref}
+                href={url.toString()}
                 target="_blank"
             >
-                {children}
+                {children} {external && <ExternalIcon className="w-3 h-3 md:w-4 md:h-4 inline-block" />}
             </a>
         </h3>
     );
 }
 
 function ItemBadge(
-    { children, variant = "default", color }: 
+    { children, variant = "default", color, className }: 
     {
         children: React.ReactNode,
         variant?: "default" | "secondary",
-        color?: "blue" | "orange" | "green" | "yellow" | "sky" | "rose"
+        color?: "blue" | "orange" | "green" | "yellow" | "sky" | "rose" | "purple",
+        className?: string
     }
 ) {
     return (
         <Badge className={cn(
-            "px-1 py-0 text-[10px] md:text-sm md:px-2 md:mb-1 md:py-[1px] font-light cursor-pointer hover:opacity-80",
+            "px-1 py-0 text-[10px] md:text-sm md:px-2 md:mb-1 md:py-[1px] font-light select-none",
+            className,
             {
                 "bg-green-600 hover:bg-green-600": color === "green",
                 "bg-orange-600 hover:bg-orange-600": color === "orange",
@@ -160,6 +168,7 @@ function ItemBadge(
                 "bg-blue-600 hover:bg-blue-600": color === "blue",
                 "bg-sky-500 hover:bg-sky-500": color === "sky",
                 "bg-rose-500 hover:bg-rose-500": color === "rose",
+                "bg-purple-500 hover:bg-purple-500": color === "purple",
             }
         )}
             variant={variant}
@@ -167,6 +176,15 @@ function ItemBadge(
             {children}
         </Badge>
     );
+}
+
+function WikiBadge({ url }: { url: string }) {
+    return <a href={url} target="_blank">
+        <ItemBadge color="purple" className="cursor-pointer hover:opacity-80 space-x-px">
+            <span className="inline-block">wiki</span>
+            <ExternalIcon className="w-2 h-2 md:w-3 md:h-3 inline-block" />
+        </ItemBadge>
+    </a>
 }
 
 function formatFileSize(size: number) {
@@ -226,7 +244,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                             <div>
                                 <ItemTitle
                                     filename={`${item.data.title}.${item.data.filetype}`}
-                                    href={url(item.type, item.id, item.data.filetype)}
+                                    href={item.url}
                                 >
                                     {item.data.title}
                                 </ItemTitle>
@@ -301,7 +319,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                 <div>
                                     <ItemTitle
                                         filename={`${item.data.title}.${item.data.filetype}`}
-                                        href={url(item.type, item.id, item.data.filetype)}
+                                        href={item.url}
                                     >
                                         {item.data.title}
                                     </ItemTitle>
@@ -310,8 +328,10 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                     </p>
                                     <div className="space-x-1 -my-[1px] md:mt-2">
                                         <ItemBadge color="green">试卷</ItemBadge>
-                                        <ItemBadge color="yellow">{item.data.filetype}</ItemBadge>
-                                        {item.data.filesize ? <ItemBadge color={"rose"}>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
+                                        {item.data.filetype === 'pdf' && <ItemBadge color={'yellow'}>pdf</ItemBadge>}
+                                        {item.data.filetype === 'pdf' && item.data.wiki && <WikiBadge url={item.data.wiki.url} />}
+                                        {item.data.filetype === 'wiki' && <WikiBadge url={item.url} />}
+                                        {item.data.filetype === 'pdf' && item.data.filesize ? <ItemBadge color={"rose"}>{formatFileSize(item.data.filesize)}</ItemBadge> : null}
                                         {item.data.college ? item.data.college.map(x => <ItemBadge variant="secondary" key={x}>{x}</ItemBadge>) : null}
                                     </div>
                                 </div>
@@ -322,7 +342,28 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                     </div>
                                     <div>
                                         <span className="font-medium">类别: </span>
-                                        {typeof (item.data.content) === "string" ? item.data.content : item.data.content.join(", ")}
+                                        {typeof (item.data.content) === "string" ?
+                                            item.data.content :
+                                            [
+                                                ...item.data.content,
+                                                ...(
+                                                    item.data.filetype === "pdf" && item.data.wiki ?
+                                                        Array.from(new Set(item.data.wiki.data.content)
+                                                            .difference(new Set(item.data.content)))
+                                                            .map(e => (
+                                                                <a
+                                                                    key={e}
+                                                                    href={(item.data as Test).wiki!.url}
+                                                                    target="_blank"
+                                                                    className="underline text-blue-500 hover:text-blue-400"
+                                                                >
+                                                                    {e} <ExternalIcon className="w-2 h-2 md:w-3 md:h-3 mb-1 inline-block" />
+                                                                </a>
+                                                            )) :
+                                                        []
+                                                )
+                                            ].flatMap(e => [", ", e]).slice(1)
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -347,7 +388,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                     <div>
                                         <ItemTitle
                                             filename={`${item.data.title}.${item.data.filetype}`}
-                                            href={url(item.type, item.id, item.data.filetype)}
+                                            href={item.url}
                                         >
                                             {item.data.title}
                                         </ItemTitle>

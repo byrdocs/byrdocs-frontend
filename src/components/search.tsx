@@ -3,7 +3,7 @@ import { Logo } from "./logo"
 import { useState, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { Item } from "@/types"
+import { Item, WikiTest } from "@/types"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { StepForward } from "lucide-react"
 import {
@@ -22,6 +22,28 @@ import { SearchList } from "./search-list"
 import { useDebounce, useDebounceFn } from "@/hooks/use-debounce"
 
 const DEBOUNCE_TIME = 500;
+let wiki_id = 0;
+
+
+function initItem(item: Item) {
+    if (item.type === 'test') {
+        let time = item.data.time.start;
+        if (item.data.time.start !== item.data.time.end) {
+            time = `${item.data.time.start}-${item.data.time.end}`
+        }
+        item.data.title = `${time}${item.data.time.semester === 'First' ?
+            " 第一学期" :
+            item.data.time.semester === 'Second' ?
+                " 第二学期" : ""
+            } ${item.data.course.name}${item.data.time.stage ? ' ' + item.data.time.stage : ''}${item.data.content.length == 1 && item.data.content[0] == "答案" ?
+                "答案" : "试卷"
+            }`
+        if (item.data.filetype === 'wiki') {
+            item.id = `wiki-${++wiki_id}`
+        }
+    }
+    return item
+}
 
 export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: boolean) => void }) {
     const [query, setQuery] = useSearchParams()
@@ -108,27 +130,34 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
 
         input.current?.focus()
 
+        const wiki_req = fetch("https://files.byrdocs.org/wiki.json")
+            .then(res => res.json())
+
         fetch("https://files.byrdocs.org/metadata2.json")
             .then(res => res.json())
-            .then((_data: Item[]) => {
-                const data = _data.map(item => {
-                    if (item.type === 'test') {
-                        let time = item.data.time.start;
-                        if (item.data.time.start !== item.data.time.end) {
-                            time = `${item.data.time.start}-${item.data.time.end}`
-                        }
-                        item.data.title = `${time}${item.data.time.semester === 'First' ?
-                            " 第一学期" :
-                            item.data.time.semester === 'Second' ?
-                                " 第二学期" : ""
-                            } ${item.data.course.name}${item.data.time.stage ? ' ' + item.data.time.stage : ''}${item.data.content.length == 1 && item.data.content[0] == "答案" ?
-                                "答案" : "试卷"
-                            }`
-                    }
-                    return item
+            .then((docs_raw_data: Item[]) => {
+                const data = docs_raw_data.map(initItem)
+                const idMap = new Map<string, number>()
+                data.forEach((item, index) => {
+                    if (item.id) idMap.set(item.id, index)
                 })
-                setLoading(false)
-                setDocsData(data)
+                wiki_req.then((wiki_raw_data: Item[]) => {
+                    wiki_raw_data.forEach((item) => {
+                        if (item.id && idMap.has(item.id)) {
+                            const mainItem = data[idMap.get(item.id)!]
+                            if (mainItem.type === 'test' && mainItem.data.filetype === 'pdf') {
+                                mainItem.data.wiki = {
+                                    url: item.url,
+                                    data: item.data as WikiTest
+                                }
+                            }
+                        } else {
+                            data.push(initItem(item))
+                        }
+                    })
+                    setLoading(false)
+                    setDocsData(data) 
+                })
             })
         return () => {
             document.removeEventListener("keydown", handleKeyDown)

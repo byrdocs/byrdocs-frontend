@@ -3,14 +3,22 @@ export type Item = {
     type: "book"
     id: string
     data: Book
+    url: string
 } | {
     type: "test"
     id: string
     data: Test
+    url: string
 } | {
     type: "doc"
     id: string
     data: Doc
+    url: string
+} | {
+    type: "test"
+    id: string
+    data: WikiTest
+    url: string
 }
 
 export type Book = {
@@ -44,7 +52,23 @@ export type Test = {
     time: Time,
     filetype: 'pdf',
     content: TestContent[],
-    filesize: number
+    filesize: number,
+    wiki?: {
+        url: string,
+        data: WikiTest
+    }
+}
+
+export type WikiTest = {
+    title: string,
+    college?: string[],
+    course: {
+        type?: "本科" | "研究生",
+        name: string,
+    },
+    filetype: 'wiki',
+    time: Time,
+    content: TestContent[],
 }
 
 export type DocContent = '思维导图' | '题库' | '答案' | '知识点' | '课件'

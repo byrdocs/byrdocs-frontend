@@ -10,7 +10,7 @@ const minisearch = new MiniSearch({
     fields: ["data.title", "data.authors", "data.translators", "data.publisher",
         "data.edition", "data.course.name", "data.course.type", "data.stage",
         "data.college"],
-    storeFields: ['type', 'data', 'id'],
+    storeFields: ['type', 'data', 'id', 'url'],
     tokenize: s => s.split(''),
     extractField: (document, fieldName) => {
         return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
