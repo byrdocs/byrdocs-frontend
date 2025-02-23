@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { EnlargeIcon, ExternalIcon } from "./icons";
 
 
-const prefix = "/files";
+const prefix = (location.hostname.endsWith("byrdocs-frontend.pages.dev") ? "https://byrdocs.org" : "") + "/files";
 const url = (_type: string, md5: string, filetype: string) => `${prefix}/${md5}.${filetype}`;
 
 function Preview() {
