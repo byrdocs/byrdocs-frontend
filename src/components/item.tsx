@@ -40,7 +40,7 @@ function ItemCard({ children, onPreview, canPreview }: { children: React.ReactNo
                     </button>
                 </div>
             )}
-            <div className="grid grid-cols-[112.5px_1fr] md:grid-cols-[150px_1fr] gap-2 md:gap-6 min-h-[150px] md:min-h-[200px]">
+            <div className="grid grid-cols-[112.5px_1fr] md:grid-cols-[150px_1fr] min-h-[150px] md:min-h-[200px]">
                 {children}
             </div>
         </Card>
@@ -106,15 +106,16 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
                     className={cn(
                         "object-cover transition-opacity duration-100 max-w-full max-h-full w-full my-auto" + className,
                         {
-                            "group-hover:opacity-30": !isError,
+                            "group-hover:opacity-30": !isError && onClick,
                         }
                     )}
                 />
             </div>
             <div className={cn(
-                "absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 transition-opacity duration-100 cursor-pointer",
+                "absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 transition-opacity duration-100",
                 {
-                    "group-hover:opacity-100": !isError,
+                    "group-hover:opacity-100": !isError && onClick,
+                    "cursor-pointer": onClick
                 }
             )}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
@@ -307,11 +308,15 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                         >
                             <ItemCover
                                 index={index}
-                                src={url("cover", item.id, "webp")}
+                                src={
+                                    item.data.filetype === 'pdf' ?
+                                        url("cover", item.id, "webp"):
+                                        "/wiki.png"
+                                }
                                 alt="试卷封面"
-                                onClick={() => {
+                                onClick={item.data.filetype === 'pdf' ? () => {
                                     openDialog(url("cover", item.id, "jpg"));
-                                }}
+                                } : undefined}
                             />
                             <div className={cn(
                                 "p-2 md:p-4 space-y-1 md:space-y-2",
