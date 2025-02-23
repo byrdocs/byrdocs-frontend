@@ -15,7 +15,7 @@ import {
     DialogTitle
 } from "@/components/ui/dialog"
 import { toast } from "sonner";
-import { ExternalIcon } from "./icons";
+import { EnlargeIcon, ExternalIcon } from "./icons";
 
 
 const prefix = "/files";
@@ -47,15 +47,25 @@ function ItemCard({ children, onPreview, canPreview }: { children: React.ReactNo
     );
 }
 
-function ItemCover({ src, alt, index, className, onClick }: { index?: number, src: string; alt: string, className?: string, onClick?: () => void }) {
+
+function ItemCover(
+    { src, alt, index, className, onClick, external }: 
+    { index?: number, src: string; external?: boolean; alt: string, className?: string, onClick?: string | (() => void) }
+) {
     const [isError, setIsError] = useState(false);
 
+    const Container = typeof onClick === "function" ? 
+        ({ children, className }: { children: React.ReactNode, className?: string }) =>
+            <div className={className} onClick={() => {
+                if (!isError && onClick && typeof onClick === "function") {
+                    onClick();
+                }
+            }}>{children}</div> :
+        ({ children, className }: { children: React.ReactNode, className?: string }) =>
+            <a href={onClick} className={cn("block", className)} target="_blank">{children}</a>
+
     return (
-        <div className="relative group my-auto" onClick={() => {
-            if (!isError && onClick) {
-                onClick();
-            }
-        }}>
+        <Container className="relative group my-auto">
             <div className="h-full flex">
                 <img
                     alt={alt}
@@ -104,7 +114,7 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
                         }
                     }}
                     className={cn(
-                        "object-cover transition-opacity duration-100 max-w-full max-h-full w-full my-auto" + className,
+                        "object-cover bg-white transition-opacity duration-100 max-w-full max-h-full w-full my-auto" + className,
                         {
                             "group-hover:opacity-30": !isError && onClick,
                         }
@@ -112,17 +122,19 @@ function ItemCover({ src, alt, index, className, onClick }: { index?: number, sr
                 />
             </div>
             <div className={cn(
-                "absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 transition-opacity duration-100",
+                "absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 transition-opacity duration-100",
                 {
                     "group-hover:opacity-100": !isError && onClick,
                     "cursor-pointer": onClick
                 }
             )}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                </svg>
+                {
+                    external ?
+                    <ExternalIcon className="w-6 h-6 text-white"/> : 
+                    <EnlargeIcon className="w-6 h-6 text-white"/>
+                }
             </div>
-        </div>
+        </Container>
     );
 }
 
@@ -313,12 +325,13 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                 src={
                                     item.data.filetype === 'pdf' ?
                                         url("cover", item.id, "webp"):
-                                        "/wiki.png"
+                                        "/wiki.svg"
                                 }
                                 alt="试卷封面"
                                 onClick={item.data.filetype === 'pdf' ? () => {
                                     openDialog(url("cover", item.id, "jpg"));
-                                } : undefined}
+                                } : item.url}
+                                external={item.data.filetype !== 'pdf'}
                             />
                             <div className={cn(
                                 "p-2 md:p-4 space-y-1 md:space-y-2",
@@ -426,7 +439,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                     <DialogTitle></DialogTitle>
                     <img
                         src={dialogImage}
-                        className="object-contain"
+                        className="object-cover relative aspect-[1/1.414] bg-gray-200"
                     >
                     </img>
                 </DialogContent>
