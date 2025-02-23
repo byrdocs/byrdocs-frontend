@@ -303,8 +303,10 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                 item.type == "test" ?
                     (
                         <ItemCard
-                            onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
-                            canPreview={item.data.filetype === "pdf"}
+                            onPreview={() => onPreview(item.data.filetype === 'pdf' ?
+                                url(item.type, item.id, item.data.filetype) :
+                                item.url)}
+                            canPreview={true}
                         >
                             <ItemCover
                                 index={index}

@@ -337,7 +337,11 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                         <DrawerTitle></DrawerTitle>
                         <div className="md:h-[85vh] h-[70vh]">
                             <iframe
-                                src={`/pdf-viewer/web/viewer.html?file=${encodeURIComponent(preview)}`}
+                                src={
+                                    preview.startsWith("/files") ?
+                                        `/pdf-viewer/web/viewer.html?file=${encodeURIComponent(preview)}`:
+                                        preview
+                                }
                                 className="w-full h-full"
                             />
                         </div>
@@ -362,7 +366,11 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                 )}
                 <SidebarContent>
                     <iframe
-                        src={`/pdf-viewer/web/viewer.html?file=${encodeURIComponent(desktopPreview)}`}
+                        src={
+                            desktopPreview.startsWith("/files") ?
+                                `/pdf-viewer/web/viewer.html?file=${encodeURIComponent(desktopPreview)}` :
+                                desktopPreview
+                        }
                         className="w-full h-full"
                     />
                 </SidebarContent>
