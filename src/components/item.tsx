@@ -37,7 +37,7 @@ function ItemCard({ children, onPreview, canPreview }: { children: React.ReactNo
         <Card className="w-full rounded-none md:rounded-lg shadow-sm md:hover:shadow-md transition-shadow overflow-hidden relative group/card">
             {canPreview && (
                 <div className="md:opacity-0 group-hover/card:opacity-100 transition-opacity duration-100 absolute z-10 left-0 top-[5px] italic text-muted-foreground bg-muted px-1 rounded-r-md shadow-sm font-mono text-sm md:text-md">
-                    <button className="inline-block cursor-pointer" onClick={onPreview}>
+                    <button className="inline-block cursor-pointer preview-file" onClick={onPreview}>
                         <Preview />
                     </button>
                 </div>
@@ -155,7 +155,7 @@ function ItemTitle({ children, filename, href }: { children: React.ReactNode, fi
     return (
         <h3 className="md:text-2xl font-bold mb-1">
             <a
-                className="underline-offset-2 hover:underline cursor-pointer"
+                className="underline-offset-2 hover:underline cursor-pointer download-file"
                 href={url.toString()}
                 target="_blank"
             >
