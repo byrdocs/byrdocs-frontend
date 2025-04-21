@@ -17,8 +17,10 @@ function App() {
         "transition-all"
       )}>
         <div className="w-full m-auto h-12 mt-12">
-          <div className="text-center text-muted-foreground">
-          <Link to="/about">关于我们</Link>
+          <div className="text-center">
+          <Link to="https://github.com/byrdocs/" className="hover:underline">GitHub</Link>
+          <span className="mx-2 border-l border-current"></span>
+          <Link to="/about" className="hover:underline">关于我们</Link>
           </div>
         </div>
       </footer>
