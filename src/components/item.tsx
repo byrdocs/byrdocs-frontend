@@ -67,7 +67,7 @@ function ItemCover(
             <a href={onClick} className={cn("block", className)} target="_blank">{children}</a>
 
     return (
-        <Container className="relative group my-auto">
+        <Container className="relative group my-auto max-h-60">
             <div className="h-full flex">
                 <img
                     alt={alt}
@@ -219,10 +219,14 @@ function formatFileSize(size: number) {
 export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url: string) => void }> = ({ item, index, onPreview }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [dialogImage, setDialogImage] = useState("");
+    const [dialogPreview, setDialogPreview] = useState("");
     const downloading = useRef(false);
+    const [coverLoading, setCoverLoading] = useState(false);
 
-    function openDialog(image: string) {
+    function openDialog(image: string, preview: string) {
         setDialogImage(image);
+        setDialogPreview(preview);
+        setCoverLoading(true);
         setIsDialogOpen(true);
     }
 
@@ -248,7 +252,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                             src={url("cover", item.id, "webp")}
                             alt="书籍封面"
                             onClick={() => {
-                                openDialog(url("cover", item.id, "jpg"));
+                                openDialog(url("cover", item.id, "jpg"), url("cover", item.id, "webp"));
                             }}
                         />
                         <div className={cn(
@@ -333,7 +337,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                 }
                                 alt="试卷封面"
                                 onClick={item.data.filetype === 'pdf' ? () => {
-                                    openDialog(url("cover", item.id, "jpg"));
+                                    openDialog(url("cover", item.id, "jpg"), url("cover", item.id, "webp"));
                                 } : item.url}
                                 external={item.data.filetype !== 'pdf'}
                             />
@@ -405,7 +409,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                     src={url("cover", item.id, "webp")}
                                     alt="资料封面"
                                     onClick={() => {
-                                        openDialog(url("cover", item.id, "jpg"));
+                                        openDialog(url("cover", item.id, "jpg"), url("cover", item.id, "webp"));
                                     }}
                                 />
                                 <div className="p-2 md:p-4 space-y-1 md:space-y-2">
@@ -439,11 +443,29 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                         (<div>Unsupported item type</div>)
             }
             <Dialog open={isDialogOpen} onOpenChange={(isOpen: boolean) => setIsDialogOpen(isOpen)}>
-                <DialogContent className="p-0 overflow-hidden">
-                    <DialogTitle></DialogTitle>
+                <DialogContent aria-describedby={undefined} className="p-0 overflow-hidden sm:w-fit [&>button]:hidden w-full max-w-screen-lg flex flex-row items-center justify-center outline-none">
+                    <DialogTitle className="sr-only">文件预览</DialogTitle>
+                    <img
+                        src={dialogPreview}
+                        className="object-contain max-h-[90vh] opacity-0"
+                    ></img>
+                    <img
+                        src={dialogPreview}
+                        className={cn("object-contain absolute text-muted-foreground transition-opacity duration-1000", {
+                            "opacity-100": coverLoading,
+                            "opacity-0 ": !coverLoading
+                        })}
+                    >
+                    </img>
                     <img
                         src={dialogImage}
-                        className="object-cover relative aspect-[1/1.414] bg-gray-200"
+                        className={cn("object-contain absolute text-muted-foreground transition-opacity duration-200", {
+                            "opacity-0": coverLoading,
+                            "opacity-100": !coverLoading
+                        })}
+                        onLoad={() => {
+                            setCoverLoading(false);
+                        }}
                     >
                     </img>
                 </DialogContent>
