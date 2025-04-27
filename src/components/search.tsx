@@ -274,7 +274,10 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                             {announcements.map((announcement) => (
                                                 <div
                                                     className="p-4 w-full rounded-lg border border-gray-400 dark:border-gray-900 text-gray-600 dark:text-gray-500 hover:dark:border-gray-800 shadow-xs hover:shadow-md transition-all cursor-pointer group"
-                                                    onClick={() => window.open(announcement.url)}
+                                                    onClick={(e) => {
+                                                        if ((e.target as HTMLElement).tagName === "A") return
+                                                        window.open(announcement.url)
+                                                    }}
                                                     key={announcement.id}
                                                 >
                                                     <h2 className="mb-1 group-hover:underline underline-offset-4 decoration-1 text-base font-bold tracking-tight text-[color:var(--vp-c-brand-light)] dark:text-[color:var(--vp-c-brand-dark)]">
