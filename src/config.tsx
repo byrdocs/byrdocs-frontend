@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-export const ANNIVERSARY_URL = "https://blog.byrdocs.org";
+export const ANNIVERSARY_URL = "https://blog.byrdocs.org/blog/posts/anniversary-1/post.html";
 
 export function Banner() {
     // return null;
