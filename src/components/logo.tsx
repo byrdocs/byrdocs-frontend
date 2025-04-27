@@ -79,9 +79,11 @@ function T365() {
 
 export function Logo({
     className,
+    confetti = false,
     size = 3
 }: {
     className?: string,
+    confetti?: boolean,
     size?: number
 }) {
     useEffect(() => {
@@ -148,10 +150,10 @@ export function Logo({
             break;
     }
     
-    return (
+    return confetti ? (
         <div className="relative">
-            {size === 2 && <Confetti />}
+            {confetti && <Confetti />}
             {logoElement}
         </div>
-    );
+    ) : logoElement;
 }

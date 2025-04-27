@@ -34,7 +34,7 @@ export default function About() {
                 <div className="w-full m-auto h-98">
                     <div className="text-center my-12" style={{ lineHeight: 3 }}>
                         <span className="text-4xl sm:text-5xl md:text-6xl">关于</span>
-                        <Logo className="inline-block" size={2} />
+                        <Logo className="inline-block" size={1} />
                     </div>
                     <div className="space-y-3 text-xl">
                         <li>

@@ -205,7 +205,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                         )}
                             onClick={reset}
                         >
-                            <Logo size={top ? 0 : 2} className={cn({ "block xl:hidden": top })} />
+                            <Logo size={top ? 0 : 2} confetti={!top} className={cn({ "block xl:hidden": top })} />
                         </div>
                         <div className={cn("h-12 md:h-14", { "hidden": !inputFixed })} ref={relative}></div>
                         <div className={cn(
