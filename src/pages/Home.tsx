@@ -5,12 +5,16 @@ import { Link } from "react-router-dom";
 import '@fontsource-variable/saira';
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Banner } from "@/config";
 
 function App() {
   const [preview, setPreview] = useState(false);
   return (
-    <>
-      <Search onPreview={setPreview}/>
+    <div className="flex flex-col h-screen">
+      <Banner />
+      <div className="flex-1 flex flex-col justify-center items-center">
+        <Search onPreview={setPreview}/>
+      </div>
       <footer className={cn({
           "w-[60vw]": preview
         },
@@ -24,7 +28,7 @@ function App() {
           </div>
         </div>
       </footer>
-    </>
+    </div>
   )
 }
 

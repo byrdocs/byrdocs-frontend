@@ -186,17 +186,14 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
 
     return (
         <SidebarProvider open={desktopPreview !== ""} >
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-full my-auto">
                 <div className={cn(
-                    "md:w-[800px] w-full md:mx-auto px-5 flex flex-col",
-                    {
-                        "min-h-[calc(100vh-96px)]": !top,
-                    }
+                    "md:w-[800px] w-full md:mx-auto px-5 flex flex-col"
                 )}>
                     <div className={cn(
                         "w-full",
                         {
-                            "my-auto pb-24": !top
+                            "pb-24": !top
                         }
                     )}>
                         <div className={cn(
@@ -283,7 +280,8 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                                     <h2 className="mb-1 group-hover:underline underline-offset-4 decoration-1 text-base font-bold tracking-tight text-[color:var(--vp-c-brand-light)] dark:text-[color:var(--vp-c-brand-dark)]">
                                                         <a>{announcement.title}</a>
                                                     </h2>
-                                                    <p className="font-light text-sm" dangerouslySetInnerHTML={{
+                                                    <p className="font-light text-sm [&_a]:text-primary/50 hover:[&_a]:underline"
+                                                     dangerouslySetInnerHTML={{
                                                         __html: announcement.summary
                                                     }} />
                                                     <div className="flex justify-between items-center">
