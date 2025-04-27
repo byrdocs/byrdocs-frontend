@@ -10,21 +10,21 @@ const Confetti = () => {
         const confettiElements: JSX.Element[] = [];
 
         const positions = [
-            { left: '25%', top: '80%' },
-            { left: '35%', top: '120%' },
-            { left: '40%', top: '5%' },
-            { left: '45%', top: '20%' },
+            { left: '5%', top: '80%' },
+            { left: '15%', top: '100%' },
+            { left: '20%', top: '30%' },
+            { left: '25%', top: '-5%' },
+            { left: '30%', top: '10%' },
+            { left: '45%', top: '100%' },
             { left: '50%', top: '-20%' },
             { left: '55%', top: '10%' },
             { left: '65%', top: '5%' },
+            { left: '71%', top: '100%' },
             { left: '74%', top: '15%' },
             { left: '78%', top: '50%' },
-            { left: '71%', top: '10%' },
-            { left: '20%', top: '30%' },
-            { left: '30%', top: '-10%' },
-            { left: '50%', top: '90%' },
-            { left: '70%', top: '85%' },
-            { left: '72%', top: '100%' }
+            { left: '85%', top: '50%' },
+            { left: '90%', top: '15%' },
+            { left: '95%', top: '100%' }
         ];
 
         const animations = [
@@ -153,7 +153,7 @@ export function Logo({
     
     return (
         <div className="relative">
-            <Confetti />
+            {size === 2 && <Confetti />}
             {logoElement}
         </div>
     );
