@@ -6,14 +6,13 @@ const Confetti = () => {
     const [confetti, setConfetti] = useState<JSX.Element[]>([]);
 
     useEffect(() => {
-        const colors = ['#3b82f6', '#facc15', '#f97316', '#22c55e', '#9333ea', '#ec4899', '#6366f1', '#eab308', '#fbbf24', '#34d399'];
         const confettiElements: JSX.Element[] = [];
 
         const positions = [
-            { left: '5%', top: '80%' },
-            { left: '15%', top: '100%' },
+            { left: '0%', top: '30%' },
+            { left: '10%', top: '100%' },
             { left: '20%', top: '30%' },
-            { left: '25%', top: '-5%' },
+            { left: '25%', top: '55%' },
             { left: '30%', top: '10%' },
             { left: '45%', top: '100%' },
             { left: '50%', top: '-20%' },
@@ -24,7 +23,7 @@ const Confetti = () => {
             { left: '78%', top: '50%' },
             { left: '85%', top: '50%' },
             { left: '90%', top: '15%' },
-            { left: '95%', top: '100%' }
+            { left: '95%', top: '50%' }
         ];
 
         const animations = [
@@ -37,7 +36,6 @@ const Confetti = () => {
 
         positions.forEach((pos, i) => {
             const size = Math.random() * 10 + 5;
-            const color = colors[Math.floor(Math.random() * colors.length)];
             const animationDuration = `${Math.random() * 3 + 2}s`;
             const animationDelay = `${Math.random() * 2}s`;
             const rotate = Math.random() * 10 - 5;
@@ -46,13 +44,12 @@ const Confetti = () => {
             confettiElements.push(
                 <div
                     key={i}
-                    className="absolute pointer-events-none -z-10 transition-all"
+                    className="absolute pointer-events-none -z-10 transition-all bg-yellow-500"
                     style={{
                         width: `${size}px`,
                         height: `${size}px`,
                         left: pos.left,
                         top: pos.top,
-                        backgroundColor: color,
                         transform: `rotate(${rotate}deg)`, 
                         clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
                         animation: `${animation} ${animationDuration} ease-in-out infinite`,
