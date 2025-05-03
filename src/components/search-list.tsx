@@ -11,7 +11,11 @@ const minisearch = new MiniSearch({
     fields: ["data.title", "data.authors", "data.translators", "data.publisher",
         "data.edition", "data.course.name", "data.course.type", "data.stage"],
     storeFields: ['type', 'data', 'id', 'url'],
-    tokenize: s => cut_for_search(s.replaceAll(' ', '')),
+    tokenize: s => {
+        const res = cut_for_search(s).filter(word => word.trim() !== '')
+        console.log(res)
+        return res
+    },
     extractField: (document, fieldName) => {
         return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
     }
