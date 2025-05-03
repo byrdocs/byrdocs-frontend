@@ -3,10 +3,10 @@ import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 
 const Confetti = () => {
-    const [confetti, setConfetti] = useState<JSX.Element[]>([]);
+    const [confetti, setConfetti] = useState<React.JSX.Element[]>([]);
 
     useEffect(() => {
-        const confettiElements: JSX.Element[] = [];
+        const confettiElements: React.JSX.Element[] = [];
 
         const positions = [
             { left: '0%', top: '30%' },
