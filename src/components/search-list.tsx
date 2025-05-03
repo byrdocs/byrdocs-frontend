@@ -13,7 +13,6 @@ const minisearch = new MiniSearch({
     storeFields: ['type', 'data', 'id', 'url'],
     tokenize: s => {
         const res = cut_for_search(s).filter(word => word.trim() !== '')
-        console.log(res)
         return res
     },
     extractField: (document, fieldName) => {
