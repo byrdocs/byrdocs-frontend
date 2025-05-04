@@ -6,6 +6,7 @@ import { detect_search_type } from "@/lib/search"
 import { Badge } from "@/components/ui/badge"
 import { MultiSelect, MultiSelectOption } from "./ui/multiselect"
 import init, { cut_for_search } from 'jieba-wasm';
+import { cn } from "@/lib/utils"
 
 const minisearch = new MiniSearch({
     fields: ["data.title", "data.authors", "data.translators", "data.publisher",
@@ -41,6 +42,7 @@ export function SearchList({
     category,
     debounceing,
     loading,
+    showSigma,
     onPreview,
     onSearching,
 }: {
@@ -50,6 +52,7 @@ export function SearchList({
     debounceing: boolean
     category: string
     loading: boolean
+    showSigma: boolean
     onPreview: (url: string) => void
     onSearching: (searching: boolean) => void
 }) {
@@ -61,6 +64,7 @@ export function SearchList({
     const [filter, setFilter] = useState<Record<fileterType, string[]>>(initialFilter)
     const [filterOptions, setFilterOptions] = useState<Record<fileterType, string[]>>(initialFilter)
     const listEnd = useRef<HTMLDivElement>(null);
+    const [searchTime, setSearchTime] = useState<number | null>(null)
 
     use(wasmInit);
 
@@ -91,6 +95,7 @@ export function SearchList({
     }, [filterOptions])
 
     useEffect(() => {
+        const start = performance.now()
         setMiniSearching(true)
         onSearching(true)
         setFilter(initialFilter)
@@ -110,12 +115,12 @@ export function SearchList({
             results = documents.filter((item) => item.id === keyword && (category === 'all' || category === item.type))
         } else {
             setSearchType('normal')
-            console.time('搜索')
+            console.time('minisearch')
             const searchResult = minisearch.search(keyword, {
                 filter: (result) => category === 'all' || category === result.type,
                 combineWith: 'AND'
             })
-            console.timeEnd('搜索')
+            console.timeEnd('minisearch')
             results = searchResult.filter((item) => item.score > 1) as unknown as Item[];
         }
 
@@ -158,6 +163,7 @@ export function SearchList({
         setSearchResults(results)
         onSearching(false)
         setMiniSearching(false)
+        setSearchTime(performance.now() - start)
     }, [keyword, category, documents]);
 
     useEffect(() => {
@@ -180,106 +186,120 @@ export function SearchList({
         return <EmptySearchList />
     }
 
-    return (<div className="min-h-[calc(100vh-260px)] sm:min-h-[calc(100vh-277px)] md:sm:min-h-[calc(100vh-310px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:mx-auto pt-2 p-0 md:p-5 md:py-3">
+    return (<div className="space-y-2 md:space-y-3 md:w-[800px] w-full md:mx-auto p-0 md:px-5 pt-2">
         {
             searchType === 'isbn' ?
-                <Badge className="text-muted-foreground" variant={"outline"}>
-                    搜索类型：ISBN
-                </Badge> :
-                searchType === 'md5' ?
-                    <Badge className="text-muted-foreground" variant={"outline"}>
-                        搜索类型：MD5
-                    </Badge> : <div className="flex-row flex">
-                        <div className="flex-1">
-                            {category === 'test' ? 
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-1 px-2 md:px-0">
-                                    <MultiSelect
-                                        selected={filter.college}
-                                        key="colledge"
-                                        placeholder="学院"
-                                        onChange={(selected) => {
-                                            setFilter({ ...filter, college: selected })
-                                        }}
-                                        search={true}
-                                    >
-                                        {filterOptions.college.map(college => (
-                                            <MultiSelectOption key={college} value={college}>{college}</MultiSelectOption>
-                                        ))}
-                                    </MultiSelect>
-                                    <MultiSelect
-                                        selected={filter.course}
-                                        key="course"
-                                        placeholder="课程"
-                                        onChange={(selected) => {
-                                            setFilter({ ...filter, course: selected })
-                                        }}
-                                        search={true}
-                                    >
-                                        {filterOptions.course.map(course => (
-                                            <MultiSelectOption key={course} value={course}>{course}</MultiSelectOption>
-                                        ))}
-                                    </MultiSelect>
-                                    <MultiSelect
-                                        selected={filter.year}
-                                        key="year"
-                                        placeholder="年份"
-                                        onChange={(selected) => {
-                                            setFilter({ ...filter, year: selected })
-                                        }}
-                                    >
-                                        {filterOptions.year.map(year => (
-                                            <MultiSelectOption key={year} value={year}>{year}</MultiSelectOption>
-                                        ))}
-                                    </MultiSelect>
-                                    <MultiSelect
-                                        selected={filter.type}
-                                        key="type"
-                                        placeholder="阶段"
-                                        onChange={(selected) => {
-                                            setFilter({ ...filter, type: selected })
-                                        }}
-                                        search={false}
-                                    >
-                                        {filterOptions.type.map(type => (
-                                            <MultiSelectOption key={type} value={type}>{type}</MultiSelectOption>
-                                        ))}
-                                    </MultiSelect>
-                                </div>
-                                :
-                                category === 'doc' ?
-                                    <div className="grid grid-cols-2 gap-x-2 px-2 md:px-0">
-                                        <MultiSelect
-                                            selected={filter.course}
-                                            key="docCourse"
-                                            placeholder="课程"
-                                            onChange={(selected) => {
-                                                setFilter({ ...filter, course: selected })
-                                            }}
-                                            search={true}
-                                        >
-                                            {filterOptions.course.map(course => (
-                                                <MultiSelectOption key={course} value={course}>{course}</MultiSelectOption>
-                                            ))}
-                                        </MultiSelect>
-                                        <MultiSelect
-                                            selected={filter.docType}
-                                            key="docType"
-                                            placeholder="类别"
-                                            onChange={(selected) => {
-                                                setFilter({ ...filter, docType: selected })
-                                            }}
-                                        >
-                                            {filterOptions.docType.map(course => (
-                                                <MultiSelectOption key={course} value={course}>{course}</MultiSelectOption>
-                                            ))}
-                                        </MultiSelect>
-                                    </div>
-                                    : null}
+            <Badge className="text-muted-foreground mx-2 md:mx-0" variant={"outline"}>
+                搜索类型：ISBN
+            </Badge> :
+            searchType === 'md5' ?
+            <Badge className="text-muted-foreground mx-2 md:mx-0" variant={"outline"}>
+                搜索类型：MD5
+            </Badge> : 
+            category == 'test' || category == 'doc' ?
+            <div className="flex-row flex">
+                <div className="flex-1">
+                    {category === 'test' ? 
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-1 px-2 md:px-0">
+                            <MultiSelect
+                                selected={filter.college}
+                                key="colledge"
+                                placeholder="学院"
+                                onChange={(selected) => {
+                                    setFilter({ ...filter, college: selected })
+                                }}
+                                search={true}
+                            >
+                                {filterOptions.college.map(college => (
+                                    <MultiSelectOption key={college} value={college}>{college}</MultiSelectOption>
+                                ))}
+                            </MultiSelect>
+                            <MultiSelect
+                                selected={filter.course}
+                                key="course"
+                                placeholder="课程"
+                                onChange={(selected) => {
+                                    setFilter({ ...filter, course: selected })
+                                }}
+                                search={true}
+                            >
+                                {filterOptions.course.map(course => (
+                                    <MultiSelectOption key={course} value={course}>{course}</MultiSelectOption>
+                                ))}
+                            </MultiSelect>
+                            <MultiSelect
+                                selected={filter.year}
+                                key="year"
+                                placeholder="年份"
+                                onChange={(selected) => {
+                                    setFilter({ ...filter, year: selected })
+                                }}
+                            >
+                                {filterOptions.year.map(year => (
+                                    <MultiSelectOption key={year} value={year}>{year}</MultiSelectOption>
+                                ))}
+                            </MultiSelect>
+                            <MultiSelect
+                                selected={filter.type}
+                                key="type"
+                                placeholder="阶段"
+                                onChange={(selected) => {
+                                    setFilter({ ...filter, type: selected })
+                                }}
+                                search={false}
+                            >
+                                {filterOptions.type.map(type => (
+                                    <MultiSelectOption key={type} value={type}>{type}</MultiSelectOption>
+                                ))}
+                            </MultiSelect>
                         </div>
-                    </div>
+                        :
+                        category === 'doc' ?
+                            <div className="grid grid-cols-2 gap-x-2 px-2 md:px-0">
+                                <MultiSelect
+                                    selected={filter.course}
+                                    key="docCourse"
+                                    placeholder="课程"
+                                    onChange={(selected) => {
+                                        setFilter({ ...filter, course: selected })
+                                    }}
+                                    search={true}
+                                >
+                                    {filterOptions.course.map(course => (
+                                        <MultiSelectOption key={course} value={course}>{course}</MultiSelectOption>
+                                    ))}
+                                </MultiSelect>
+                                <MultiSelect
+                                    selected={filter.docType}
+                                    key="docType"
+                                    placeholder="类别"
+                                    onChange={(selected) => {
+                                        setFilter({ ...filter, docType: selected })
+                                    }}
+                                >
+                                    {filterOptions.docType.map(course => (
+                                        <MultiSelectOption key={course} value={course}>{course}</MultiSelectOption>
+                                    ))}
+                                </MultiSelect>
+                            </div>
+                            : null}
+                </div>
+            </div> : null
         }
         {filterdResults.length !== 0 ?
             <>
+                {searchType === 'normal' && <div 
+                    className={cn(
+                        "text-sm text-muted-foreground px-2 md:px-0 transition-all overflow-hidden",
+                        {
+                            "max-h-0": !showSigma,
+                            "max-h-[100px]": showSigma,
+                        }
+                    )}
+                >
+                    找到 {filterdResults.length} 条结果
+                    {searchTime !== null ? `，耗时 ${searchTime.toFixed(2)} ms` : null}
+                </div>}
                 {(filterdResults.slice(0, pageSize)).map((item, index) => (
                     <ItemDisplay key={item.id} item={item as unknown as Item} index={index} onPreview={onPreview} />
                 ))}
@@ -303,7 +323,7 @@ export function SearchList({
 
 export function EmptySearchList() {
     return (
-        <div className="min-h-[calc(100vh-260px)] sm:min-h-[calc(100vh-277px)] md:sm:min-h-[calc(100vh-310px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
+        <div className="h-full text-center text-muted-foreground p-0 md:p-5 flex">
             <div className="text-xl sm:text-2xl font-light m-auto ">
                 搜索书籍、试卷和资料
             </div>

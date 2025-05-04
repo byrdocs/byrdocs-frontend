@@ -23,6 +23,7 @@ export default defineConfig({
   server: {
     proxy: {
         "/files": BASE_URL,
+        "/thumbnail": BASE_URL,
         "/api": BASE_URL
     }
   }
