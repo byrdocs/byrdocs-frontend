@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input"
 import { Logo } from "./logo"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, Suspense } from "react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Item, WikiTest } from "@/types"
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { TabItem, TabList } from "./tab"
-import { SearchList } from "./search-list"
+import { EmptySearchList, SearchList } from "./search-list"
 import { useDebounce, useDebounceFn } from "@/hooks/use-debounce"
 
 const DEBOUNCE_TIME = 500;
@@ -67,6 +67,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
     const [keyword, setKeyword] = useState(q)
     const [debouncedKeyword, debouncing] = useDebounce(keyword, DEBOUNCE_TIME)
     const [miniSearching, setMiniSearching] = useState(false);
+    const [suspenseLoading, setSuspenseLoading] = useState(true);
 
     if (isMobile) {
         if (desktopPreview) {
@@ -156,7 +157,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                         }
                     })
                     setLoading(false)
-                    setDocsData(data) 
+                    setDocsData(data)
                 })
             })
         return () => {
@@ -183,6 +184,16 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
         setKeyword(q)
         setSearching(true)
     }, [])
+
+    const LoadedIndicator = () => {
+        useEffect(() => {
+            setSuspenseLoading(false);
+            return () => {
+                setSuspenseLoading(true);
+            };
+        }, []);
+        return null;
+    };
 
     return (
         <SidebarProvider open={desktopPreview !== ""} >
@@ -227,7 +238,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                     </div>)}
 
                                     <div className="absolute left-[15px] top-1/2 transform -translate-y-1/2 w-6 h-6 text-muted-foreground">
-                                        {loading || debouncing || miniSearching ?
+                                        {top && suspenseLoading || loading || debouncing || miniSearching ?
                                             <svg className="animate-spin text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -284,9 +295,9 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                                         <a>{announcement.title}</a>
                                                     </h2>
                                                     <p className="font-light text-sm [&_a]:text-primary/50 hover:[&_a]:underline"
-                                                     dangerouslySetInnerHTML={{
-                                                        __html: announcement.summary
-                                                    }} />
+                                                        dangerouslySetInnerHTML={{
+                                                            __html: announcement.summary
+                                                        }} />
                                                     <div className="flex justify-between items-center">
                                                     </div>
                                                 </div>
@@ -313,24 +324,28 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                 </TabList>
                             </div>
                         </div>
-                        <SearchList
-                            documents={docsData}
-                            keyword={debouncedKeyword}
-                            debounceing={debouncing}
-                            category={active}
-                            searching={searching}
-                            onPreview={url => {
-                                if (isMobile) {
-                                    setPreview(url)
-                                } else {
-                                    setDesktopPreview(url)
-                                    onLayoutPreview(true)
-                                }
-                            }}
-                            onSearching={(searching) => {
-                                setMiniSearching(searching)
-                            }}
-                        />
+                        <Suspense fallback={<EmptySearchList />}>
+                            <LoadedIndicator />
+                            <SearchList
+                                documents={docsData}
+                                keyword={debouncedKeyword}
+                                debounceing={debouncing}
+                                category={active}
+                                loading={loading}
+                                searching={searching}
+                                onPreview={url => {
+                                    if (isMobile) {
+                                        setPreview(url)
+                                    } else {
+                                        setDesktopPreview(url)
+                                        onLayoutPreview(true)
+                                    }
+                                }}
+                                onSearching={(searching) => {
+                                    setMiniSearching(searching)
+                                }}
+                            />
+                        </Suspense>
                     </>
                 )}
                 <Drawer open={preview !== ""} onClose={() => setPreview("")}>
@@ -340,7 +355,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                             <iframe
                                 src={
                                     preview.startsWith("/files") ?
-                                        `/pdf-viewer/web/viewer.html?file=${encodeURIComponent(preview)}`:
+                                        `/pdf-viewer/web/viewer.html?file=${encodeURIComponent(preview)}` :
                                         preview
                                 }
                                 className="w-full h-full"

@@ -5,7 +5,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Item, Test } from "@/types";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Search } from "lucide-react";
 
@@ -51,20 +51,23 @@ function ItemCard({ children, onPreview, canPreview }: { children: React.ReactNo
 
 
 function ItemCover(
-    { src, alt, index, className, onClick, external }: 
-    { index?: number, src: string; external?: boolean; alt: string, className?: string, onClick?: string | (() => void) }
+    { src, alt, index, className, onClick, external }:
+        { index?: number, src: string; external?: boolean; alt: string, className?: string, onClick?: string | (() => void) }
 ) {
     const [isError, setIsError] = useState(false);
 
-    const Container = typeof onClick === "function" ? 
-        ({ children, className }: { children: React.ReactNode, className?: string }) =>
-            <div className={className} onClick={() => {
-                if (!isError && onClick && typeof onClick === "function") {
-                    onClick();
-                }
-            }}>{children}</div> :
-        ({ children, className }: { children: React.ReactNode, className?: string }) =>
-            <a href={onClick} className={cn("block", className)} target="_blank">{children}</a>
+    const Container = useMemo(
+        () => typeof onClick === "function" ?
+            ({ children, className }: { children: React.ReactNode, className?: string }) =>
+                <div className={className} onClick={() => {
+                    if (!isError && onClick && typeof onClick === "function") {
+                        onClick();
+                    }
+                }}>{children}</div> :
+            ({ children, className }: { children: React.ReactNode, className?: string }) =>
+                <a href={onClick} className={cn("block", className)} target="_blank">{children}</a>,
+        [typeof onClick]
+    )
 
     return (
         <Container className="relative group my-auto max-h-60">
@@ -132,8 +135,8 @@ function ItemCover(
             )}>
                 {
                     external ?
-                    <ExternalIcon className="w-6 h-6 text-white"/> : 
-                    <EnlargeIcon className="w-6 h-6 text-white"/>
+                        <ExternalIcon className="w-6 h-6 text-white" /> :
+                        <EnlargeIcon className="w-6 h-6 text-white" />
                 }
             </div>
         </Container>
@@ -166,7 +169,7 @@ function ItemTitle({ children, filename, href }: { children: React.ReactNode, fi
 }
 
 function ItemBadge(
-    { children, variant = "default", color, className }: 
+    { children, variant = "default", color, className }:
     {
         children: React.ReactNode,
         variant?: "default" | "secondary",
@@ -244,6 +247,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
             {item.type == "book" ?
                 (
                     <ItemCard
+                        key={item.id + item.data.filetype}
                         onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
                         canPreview={item.data.filetype === "pdf"}
                     >
@@ -323,6 +327,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                 item.type == "test" ?
                     (
                         <ItemCard
+                            key={item.id + item.data.filetype}
                             onPreview={() => onPreview(item.data.filetype === 'pdf' ?
                                 url(item.type, item.id, item.data.filetype) :
                                 item.url)}
@@ -332,7 +337,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                                 index={index}
                                 src={
                                     item.data.filetype === 'pdf' ?
-                                        url("cover", item.id, "webp"):
+                                        url("cover", item.id, "webp") :
                                         "/wiki.svg"
                                 }
                                 alt="试卷封面"
@@ -401,6 +406,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                     item.type == "doc" ?
                         (
                             <ItemCard
+                                key={item.id + item.data.filetype}
                                 onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
                                 canPreview={item.data.filetype === "pdf"}
                             >

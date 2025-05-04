@@ -6,7 +6,11 @@ export function useDebounce<T>(value: T, delay: number): [T, boolean] {
 
   useEffect(() => {
     setDebouncing(true);
-
+    if (!value && debouncedValue) {
+        setDebouncedValue(value);
+        setDebouncing(false);
+        return;
+    }
     const handler = setTimeout(() => {
       setDebouncedValue(value);
       setDebouncing(false);

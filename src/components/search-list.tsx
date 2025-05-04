@@ -1,21 +1,26 @@
 import { Item } from "@/types"
-import { useEffect, useRef, useState, } from "react"
+import { useEffect, useRef, useState, use } from "react"
 import { ItemDisplay } from "./item"
 import MiniSearch from "minisearch"
 import { detect_search_type } from "@/lib/search"
 import { Badge } from "@/components/ui/badge"
 import { MultiSelect, MultiSelectOption } from "./ui/multiselect"
+import init, { cut_for_search } from 'jieba-wasm';
 
 const minisearch = new MiniSearch({
     fields: ["data.title", "data.authors", "data.translators", "data.publisher",
-        "data.edition", "data.course.name", "data.course.type", "data.stage",
-        "data.college"],
+        "data.edition", "data.course.name", "data.course.type", "data.stage"],
     storeFields: ['type', 'data', 'id', 'url'],
-    tokenize: s => s.split(''),
+    tokenize: s => {
+        const res = cut_for_search(s).filter(word => word.trim() !== '')
+        return res
+    },
     extractField: (document, fieldName) => {
         return fieldName.split('.').reduce((doc, key) => doc && doc[key], document)
     }
 })
+
+const wasmInit = init('/jieba_rs_wasm_bg_2.2.0.wasm')
 
 const initialFilter = {
     college: [],
@@ -35,6 +40,7 @@ export function SearchList({
     searching,
     category,
     debounceing,
+    loading,
     onPreview,
     onSearching,
 }: {
@@ -43,6 +49,7 @@ export function SearchList({
     searching: boolean
     debounceing: boolean
     category: string
+    loading: boolean
     onPreview: (url: string) => void
     onSearching: (searching: boolean) => void
 }) {
@@ -54,6 +61,8 @@ export function SearchList({
     const [filter, setFilter] = useState<Record<fileterType, string[]>>(initialFilter)
     const [filterOptions, setFilterOptions] = useState<Record<fileterType, string[]>>(initialFilter)
     const listEnd = useRef<HTMLDivElement>(null);
+
+    use(wasmInit);
 
     useEffect(() => {
         setPageSize(PAGE_SIZE)
@@ -69,7 +78,7 @@ export function SearchList({
     useEffect(() => {
         function onScroll() {
             if (listEnd.current && listEnd.current.getBoundingClientRect().top < window.innerHeight && filterdResults.length > pageSize) {
-                setPageSize(pageSize + PAGE_SIZE)
+                setPageSize(pageSize => pageSize + PAGE_SIZE)
             }
         }
         onScroll()
@@ -101,9 +110,13 @@ export function SearchList({
             results = documents.filter((item) => item.id === keyword && (category === 'all' || category === item.type))
         } else {
             setSearchType('normal')
-            results = minisearch.search(keyword, {
-                filter: (result) => category === 'all' || category === result.type
-            }).filter((item) => item.score > 1) as unknown as Item[];
+            console.time('搜索')
+            const searchResult = minisearch.search(keyword, {
+                filter: (result) => category === 'all' || category === result.type,
+                combineWith: 'AND'
+            })
+            console.timeEnd('搜索')
+            results = searchResult.filter((item) => item.score > 1) as unknown as Item[];
         }
 
         const colleges = new Set<string>()
@@ -163,14 +176,8 @@ export function SearchList({
         setFilterdResults(filterdResults)
     }, [filter, searchResults])
 
-    if (!searching || filterdResults.length === 0 && (debounceing || miniSearching)) {
-        return (
-            <div className="min-h-[calc(100vh-260px)] sm:min-h-[calc(100vh-277px)] md:sm:min-h-[calc(100vh-310px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
-                <div className="text-xl sm:text-2xl font-light m-auto ">
-                    搜索书籍、试卷和资料
-                </div>
-            </div>
-        )
+    if (loading || !searching || filterdResults.length === 0 && (debounceing || miniSearching)) {
+        return <EmptySearchList />
     }
 
     return (<div className="min-h-[calc(100vh-260px)] sm:min-h-[calc(100vh-277px)] md:sm:min-h-[calc(100vh-310px)] xl:min-h-[calc(100vh-256px)] space-y-3 md:w-[800px] w-full md:mx-auto pt-2 p-0 md:p-5 md:py-3">
@@ -292,4 +299,14 @@ export function SearchList({
         }
         <div ref={listEnd}></div>
     </div>)
+}
+
+export function EmptySearchList() {
+    return (
+        <div className="min-h-[calc(100vh-260px)] sm:min-h-[calc(100vh-277px)] md:sm:min-h-[calc(100vh-310px)] xl:min-h-[calc(100vh-256px)] text-center text-muted-foreground p-0 md:p-5 flex">
+            <div className="text-xl sm:text-2xl font-light m-auto ">
+                搜索书籍、试卷和资料
+            </div>
+        </div>
+    )
 }
