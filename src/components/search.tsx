@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Item, WikiTest } from "@/types"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { StepForward } from "lucide-react"
+import { ChartLine, StepForward } from "lucide-react"
 import {
     Drawer,
     DrawerContent,
@@ -68,6 +68,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
     const [debouncedKeyword, debouncing] = useDebounce(keyword, DEBOUNCE_TIME)
     const [miniSearching, setMiniSearching] = useState(false);
     const [suspenseLoading, setSuspenseLoading] = useState(true);
+    const [showSigma, setShowSigma] = useState(false);
 
     if (isMobile) {
         if (desktopPreview) {
@@ -196,8 +197,10 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
     };
 
     return (
-        <SidebarProvider open={desktopPreview !== ""} >
-            <div className="flex flex-col w-full my-auto">
+        <SidebarProvider open={desktopPreview !== ""} className="h-full" >
+            <div className={cn("flex flex-col w-full my-auto", {
+                    "h-full": top,
+                })}>
                 <div className={cn(
                     "md:w-[800px] w-full md:mx-auto px-5 flex flex-col"
                 )}>
@@ -312,16 +315,36 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                 {top && (
                     <>
                         <div className="w-full left-0 border-b-[0.5px] border-muted-foreground pb-0 mx-auto">
-                            <div className="flex justify-center space-x-4 md:space-x-8 mt-2 md:mt-4 text-2xl font-light">
-                                <TabList onSelect={select => {
-                                    setActive(select)
-                                    setQuery(new URLSearchParams({ c: select, q: keyword }))
-                                }} active={active}>
-                                    <TabItem value="all">全部</TabItem>
-                                    <TabItem value="book">书籍</TabItem>
-                                    <TabItem value="test">试卷</TabItem>
-                                    <TabItem value="doc">资料</TabItem>
-                                </TabList>
+                            <div className="md:w-[800px] max-w-full md:m-auto px-5">
+                                <div className="flex mt-2 md:mt-4 text-2xl font-light">
+                                    <div className="flex items-center mx-auto space-x-4 md:space-x-8 ">
+                                        <TabList onSelect={select => {
+                                            setActive(select)
+                                            setQuery(new URLSearchParams({ c: select, q: keyword }))
+                                        }} active={active}>
+                                            <TabItem value="all">全部</TabItem>
+                                            <TabItem value="book">书籍</TabItem>
+                                            <TabItem value="test">试卷</TabItem>
+                                            <TabItem value="doc">资料</TabItem>
+                                        </TabList>
+                                    </div>
+                                    <div className="items-end hidden md:block py-1">
+                                        <button 
+                                            className={cn(
+                                                "h-full px-1 text-xs hover:bg-muted/60 active:bg-muted/40 transition-colors rounded-md",
+                                                {
+                                                    "text-muted-foreground": showSigma,
+                                                    "text-muted-foreground/40": !showSigma,
+                                                }
+                                            )}
+                                            onClick={() => {
+                                                setShowSigma(!showSigma)
+                                            }}
+                                        >
+                                            <ChartLine size={16} />
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <Suspense fallback={<EmptySearchList />}>
@@ -333,6 +356,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                 category={active}
                                 loading={loading}
                                 searching={searching}
+                                showSigma={showSigma}
                                 onPreview={url => {
                                     if (isMobile) {
                                         setPreview(url)

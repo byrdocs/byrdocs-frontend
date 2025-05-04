@@ -19,9 +19,9 @@ import { EnlargeIcon, ExternalIcon } from "./icons";
 
 import 'core-js/modules/esnext.set.difference';
 
-
-const prefix = (location.hostname.endsWith("byrdocs-frontend.pages.dev") ? "https://byrdocs.org" : "") + "/files";
-const url = (_type: string, md5: string, filetype: string) => `${prefix}/${md5}.${filetype}`;
+const origin = location.hostname.endsWith("byrdocs-frontend.pages.dev") ? "https://byrdocs.org" : "";
+const url = (_type: string, md5: string, filetype: string) => `${origin}/files/${md5}.${filetype}`;
+const preview_url = (md5: string) => `${origin}/thumbnail/${md5}.jpg`;
 
 function Preview() {
     return (
@@ -170,12 +170,12 @@ function ItemTitle({ children, filename, href }: { children: React.ReactNode, fi
 
 function ItemBadge(
     { children, variant = "default", color, className }:
-    {
-        children: React.ReactNode,
-        variant?: "default" | "secondary",
-        color?: "blue" | "orange" | "green" | "yellow" | "sky" | "rose" | "purple",
-        className?: string
-    }
+        {
+            children: React.ReactNode,
+            variant?: "default" | "secondary",
+            color?: "blue" | "orange" | "green" | "yellow" | "sky" | "rose" | "purple",
+            className?: string
+        }
 ) {
     return (
         <Badge className={cn(
@@ -253,10 +253,10 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                     >
                         <ItemCover
                             index={index}
-                            src={url("cover", item.id, "webp")}
+                            src={preview_url(item.id)}
                             alt="书籍封面"
                             onClick={() => {
-                                openDialog(url("cover", item.id, "jpg"), url("cover", item.id, "webp"));
+                                openDialog(url("cover", item.id, "jpg"), preview_url(item.id));
                             }}
                         />
                         <div className={cn(
@@ -336,13 +336,11 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                             <ItemCover
                                 index={index}
                                 src={
-                                    item.data.filetype === 'pdf' ?
-                                        url("cover", item.id, "webp") :
-                                        "/wiki.svg"
+                                    item.data.filetype === 'pdf' ? preview_url(item.id) : "/wiki.svg"
                                 }
                                 alt="试卷封面"
                                 onClick={item.data.filetype === 'pdf' ? () => {
-                                    openDialog(url("cover", item.id, "jpg"), url("cover", item.id, "webp"));
+                                    openDialog(url("cover", item.id, "jpg"), preview_url(item.id));
                                 } : item.url}
                                 external={item.data.filetype !== 'pdf'}
                             />
@@ -412,10 +410,10 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                             >
                                 <ItemCover
                                     index={index}
-                                    src={url("cover", item.id, "webp")}
+                                    src={ preview_url(item.id)}
                                     alt="资料封面"
                                     onClick={() => {
-                                        openDialog(url("cover", item.id, "jpg"), url("cover", item.id, "webp"));
+                                        openDialog(url("cover", item.id, "jpg"), preview_url(item.id));
                                     }}
                                 />
                                 <div className="p-2 md:p-4 space-y-1 md:space-y-2">
@@ -449,31 +447,29 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                         (<div>Unsupported item type</div>)
             }
             <Dialog open={isDialogOpen} onOpenChange={(isOpen: boolean) => setIsDialogOpen(isOpen)}>
-                <DialogContent aria-describedby={undefined} className="p-0 overflow-hidden sm:w-fit [&>button]:hidden w-full max-w-screen-lg flex flex-row items-center justify-center outline-none">
+                <DialogContent aria-describedby={undefined} className="p-0 [&>button]:hidden flex flex-row items-center justify-center outline-none">
                     <DialogTitle className="sr-only">文件预览</DialogTitle>
-                    <img
-                        src={dialogPreview}
-                        className="object-contain max-h-[90vh] opacity-0"
-                    ></img>
-                    <img
-                        src={dialogPreview}
-                        className={cn("object-contain absolute text-muted-foreground transition-opacity duration-1000", {
-                            "opacity-100": coverLoading,
-                            "opacity-0 ": !coverLoading
-                        })}
-                    >
-                    </img>
-                    <img
-                        src={dialogImage}
-                        className={cn("object-contain absolute text-muted-foreground transition-opacity duration-200", {
-                            "opacity-0": coverLoading,
-                            "opacity-100": !coverLoading
-                        })}
-                        onLoad={() => {
-                            setCoverLoading(false);
-                        }}
-                    >
-                    </img>
+                    <div className="relative w-full h-full">
+                        <img
+                            src={dialogPreview}
+                            className={cn("object-contain left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] min-h-[80vh] absolute transition-opacity duration-1000", {
+                                "opacity-100": coverLoading,
+                                "opacity-0 ": !coverLoading
+                            })}
+                        >
+                        </img>
+                        <img
+                            src={dialogImage}
+                            className={cn("object-contain left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] max-h-[80vh] absolute transition-opacity duration-200", {
+                                "opacity-0": coverLoading,
+                                "opacity-100": !coverLoading
+                            })}
+                            onLoad={() => {
+                                setCoverLoading(false);
+                            }}
+                        >
+                        </img>
+                    </div>
                 </DialogContent>
             </Dialog>
         </>
