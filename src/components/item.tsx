@@ -21,7 +21,7 @@ import 'core-js/modules/esnext.set.difference';
 
 const origin = location.hostname.endsWith("byrdocs-frontend.pages.dev") ? "https://byrdocs.org" : "";
 const url = (_type: string, md5: string, filetype: string) => `${origin}/files/${md5}.${filetype}`;
-const preview_url = (md5: string) => `${origin}/thumbnail/${md5}.jpg`;
+const preview_url = (md5: string) => `${origin}/files/${md5}.webp`;
 
 function Preview() {
     return (
