@@ -78,7 +78,7 @@ export function SearchList({
     useEffect(() => {
         function onScroll() {
             if (listEnd.current && listEnd.current.getBoundingClientRect().top < window.innerHeight && filterdResults.length > pageSize) {
-                setPageSize(pageSize + PAGE_SIZE)
+                setPageSize(pageSize => pageSize + PAGE_SIZE)
             }
         }
         onScroll()
