@@ -452,7 +452,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                     <div className="relative w-full h-full">
                         <img
                             src={dialogPreview}
-                            className={cn("object-contain left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] min-h-[80vh] absolute transition-opacity duration-1000", {
+                            className={cn("object-contain left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] sm:min-h-[80vh] absolute transition-opacity duration-1000", {
                                 "opacity-100": coverLoading,
                                 "opacity-0 ": !coverLoading
                             })}
@@ -460,7 +460,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                         </img>
                         <img
                             src={dialogImage}
-                            className={cn("object-contain left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] min-h-[80vh] absolute transition-opacity duration-200", {
+                            className={cn("object-contain left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] sm:min-h-[80vh] absolute transition-opacity duration-200", {
                                 "opacity-0": coverLoading,
                                 "opacity-100": !coverLoading
                             })}
