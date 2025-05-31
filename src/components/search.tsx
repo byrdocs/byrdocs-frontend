@@ -297,7 +297,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                                     <h2 className="mb-1 group-hover:underline underline-offset-4 decoration-1 text-base font-bold tracking-tight text-[color:var(--vp-c-brand-light)] dark:text-[color:var(--vp-c-brand-dark)]">
                                                         <a>{announcement.title}</a>
                                                     </h2>
-                                                    <p className="font-light text-sm [&_a]:text-primary/50 hover:[&_a]:underline"
+                                                    <p className="font-light text-sm [&_a]:text-primary/80 hover:[&_a]:underline"
                                                         dangerouslySetInnerHTML={{
                                                             __html: announcement.summary
                                                         }} />
