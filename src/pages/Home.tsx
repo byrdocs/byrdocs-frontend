@@ -11,7 +11,11 @@ function App() {
   const [preview, setPreview] = useState(false);
   return (
     <div className="flex flex-col h-screen">
-      <Banner />
+      <Banner className={cn({
+            "w-[60vw]": preview
+            },
+            "transition-all"
+        )}/>
       <div className="flex-1 flex flex-col justify-center items-center">
         <Search onPreview={setPreview}/>
       </div>
