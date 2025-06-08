@@ -1,4 +1,4 @@
-import { Item } from "@/types"
+import { Item, Test, TestItem } from "@/types"
 import { useEffect, useRef, useState, use } from "react"
 import { ItemDisplay } from "./item"
 import MiniSearch from "minisearch"
@@ -50,7 +50,7 @@ export function SearchList({
     documents: Item[]
     searching: boolean
     debounceing: boolean
-    category: string
+    category: "all" | "test" | "doc" | "book"
     loading: boolean
     showSigma: boolean
     onPreview: (url: string) => void
@@ -167,7 +167,7 @@ export function SearchList({
     }, [keyword, category, documents]);
 
     useEffect(() => {
-        const filterdResults = searchResults.filter((item) => {
+        let filterdResults = searchResults.filter((item) => {
             if (item.type === 'test') {
                 if (filter.college.length > 0 && !filter.college.some(college => item.data.college?.includes(college))) return false
                 if (filter.course.length > 0 && !filter.course.some(course => item.data.course.name === course)) return false
@@ -179,6 +179,17 @@ export function SearchList({
             }
             return true
         })
+        if (category === "test") {
+            filterdResults = (filterdResults as TestItem[]).sort((a, b) => {
+                const aTime = a.data.time ? new Date(a.data.time.start).getTime() : 0;
+                const bTime = b.data.time ? new Date(b.data.time.start).getTime() : 0;
+                if (aTime !== bTime) return bTime - aTime;
+                const aSemester = a.data.time.semester ?? '';
+                const bSemester = b.data.time.semester ?? '';
+                if (aSemester !== bSemester) return bSemester.localeCompare(aSemester);
+                return b.id.localeCompare(a.id);
+            });
+        }
         setFilterdResults(filterdResults)
     }, [filter, searchResults])
 

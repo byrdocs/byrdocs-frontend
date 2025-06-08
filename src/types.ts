@@ -1,20 +1,28 @@
 
-export type Item = {
+export type Item = BookItem | DocItem | TestItem | WikiTestItem
+
+export type BookItem = {
     type: "book"
     id: string
     data: Book
     url: string
-} | {
-    type: "test"
-    id: string
-    data: Test
-    url: string
-} | {
+}
+
+export type DocItem = {
     type: "doc"
     id: string
     data: Doc
     url: string
-} | {
+}
+
+export type TestItem = {
+    type: "test"
+    id: string
+    data: Test
+    url: string
+}
+
+export type WikiTestItem = {
     type: "test"
     id: string
     data: WikiTest
