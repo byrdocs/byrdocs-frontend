@@ -3,7 +3,7 @@ import { Logo } from "./logo"
 import { useState, useRef, useEffect, Suspense } from "react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { Item, WikiTest } from "@/types"
+import { CategoryType, Item, WikiTest } from "@/types"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { ChartLine, StepForward } from "lucide-react"
 import {
@@ -52,7 +52,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
     const input = useRef<HTMLInputElement>(null)
     const [showClear, setShowClear] = useState(q !== "")
     const showedTip = useRef(false)
-    const [active, setActive] = useState(query.get("c") ?? 'all')
+    const [active, setActive] = useState<CategoryType>(query.get("c") as CategoryType ?? 'all')
     const [inputFixed, setInputFixed] = useState(false)
     const relative = useRef<HTMLDivElement>(null)
     const navigate = useNavigate()
@@ -319,7 +319,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                 <div className="flex mt-2 md:mt-4 text-2xl font-light">
                                     <div className="flex items-center mx-auto space-x-4 md:space-x-8 ">
                                         <TabList onSelect={select => {
-                                            setActive(select)
+                                            setActive(select as CategoryType)
                                             setQuery(new URLSearchParams({ c: select, q: keyword }))
                                         }} active={active}>
                                             <TabItem value="all">全部</TabItem>

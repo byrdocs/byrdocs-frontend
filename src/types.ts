@@ -1,5 +1,6 @@
 
 export type Item = BookItem | DocItem | TestItem | WikiTestItem
+export type CategoryType = Item['type'] | 'all'
 
 export type BookItem = {
     type: "book"

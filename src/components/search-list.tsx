@@ -1,4 +1,4 @@
-import { Item, Test, TestItem } from "@/types"
+import { Item, TestItem } from "@/types"
 import { useEffect, useRef, useState, use } from "react"
 import { ItemDisplay } from "./item"
 import MiniSearch from "minisearch"
