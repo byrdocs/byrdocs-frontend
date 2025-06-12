@@ -26,9 +26,8 @@ const wasmInit = init('/jieba_rs_wasm_bg_2.2.0.wasm')
 const initialFilter = {
     college: [],
     course: [],
-    year: [],
-    type: [],
-    docType: []
+    content: [],
+    type: []
 }
 
 type fileterType = keyof typeof initialFilter
@@ -127,7 +126,7 @@ export function SearchList({
         const colleges = new Set<string>()
         const courses = new Set<string>()
         const timeRange = new Set<string>()
-        const docTypes = new Set<string>()
+        const content = new Set<string>()
         for (const item of results) {
             if (item.type === 'test') {
                 if (item.data.college) {
@@ -136,9 +135,10 @@ export function SearchList({
                     }
                 }
                 if (item.data.course.name) courses.add(item.data.course.name)
-                if (item.data.time) {
-                    timeRange.add(item.data.time.start)
-                    timeRange.add(item.data.time.end)
+                if (item.data.content) {
+                    for (const type of item.data.content) {
+                        content.add(type)
+                    }
                 }
             } else if (item.type === 'doc') {
                 if (item.data.course) {
@@ -148,7 +148,7 @@ export function SearchList({
                 }
                 if (item.data.content) {
                     for (const type of item.data.content) {
-                        docTypes.add(type)
+                        content.add(type)
                     }
                 }
             }
@@ -156,8 +156,7 @@ export function SearchList({
         setFilterOptions({
             college: Array.from(colleges).sort(),
             course: Array.from(courses).sort(),
-            year: Array.from(timeRange).sort().reverse(),
-            docType: Array.from(docTypes).sort(),
+            content: Array.from(content).sort().reverse(),
             type: ['期中', '期末', '其他']
         })
         setSearchResults(results)
@@ -171,11 +170,11 @@ export function SearchList({
             if (item.type === 'test') {
                 if (filter.college.length > 0 && !filter.college.some(college => item.data.college?.includes(college))) return false
                 if (filter.course.length > 0 && !filter.course.some(course => item.data.course.name === course)) return false
-                if (filter.year.length > 0 && !filter.year.some(year => item.data.time.start === year || item.data.time.end === year)) return false
+                if (filter.content.length > 0 && !filter.content.some(type => item.data.content.includes(type as any))) return false
                 if (filter.type.length > 0 && !filter.type.some(type => (item.data.time.stage ?? '其他') === type)) return false
             } else if (item.type === 'doc') {
                 if (filter.course.length > 0 && !filter.course.some(course => item.data.course.some(c => c.name === course))) return false
-                if (filter.docType.length > 0 && !filter.docType.some(type => item.data.content.includes(type as any))) return false
+                if (filter.content.length > 0 && !filter.content.some(type => item.data.content.includes(type as any))) return false
             }
             return true
         })
@@ -239,15 +238,15 @@ export function SearchList({
                                 ))}
                             </MultiSelect>
                             <MultiSelect
-                                selected={filter.year}
-                                key="year"
-                                placeholder="年份"
+                                selected={filter.content}
+                                key="content"
+                                placeholder="类别"
                                 onChange={(selected) => {
-                                    setFilter({ ...filter, year: selected })
+                                    setFilter({ ...filter, content: selected })
                                 }}
                             >
-                                {filterOptions.year.map(year => (
-                                    <MultiSelectOption key={year} value={year}>{year}</MultiSelectOption>
+                                {filterOptions.content.map(content => (
+                                    <MultiSelectOption key={content} value={content}>{content}</MultiSelectOption>
                                 ))}
                             </MultiSelect>
                             <MultiSelect
@@ -281,14 +280,14 @@ export function SearchList({
                                     ))}
                                 </MultiSelect>
                                 <MultiSelect
-                                    selected={filter.docType}
+                                    selected={filter.content}
                                     key="docType"
                                     placeholder="类别"
                                     onChange={(selected) => {
-                                        setFilter({ ...filter, docType: selected })
+                                        setFilter({ ...filter, content: selected })
                                     }}
                                 >
-                                    {filterOptions.docType.map(course => (
+                                    {filterOptions.content.map(course => (
                                         <MultiSelectOption key={course} value={course}>{course}</MultiSelectOption>
                                     ))}
                                 </MultiSelect>
