@@ -62,7 +62,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
     const [desktopPreview, setDesktopPreview] = useState("")
     const isMobile = useIsMobile()
     const [announcements, setAnnouncements] = useState<any[]>([])
-    const updateQeury = useDebounceFn(setQuery, DEBOUNCE_TIME)
+    const updateQuery = useDebounceFn(setQuery, DEBOUNCE_TIME)
     const [loading, setLoading] = useState(true)
     const [keyword, setKeyword] = useState(q)
     const [debouncedKeyword, debouncing] = useDebounce(keyword, DEBOUNCE_TIME)
@@ -262,7 +262,7 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
                                         onInput={e => {
                                             const value = e.currentTarget.value
                                             setKeyword(value)
-                                            updateQeury(new URLSearchParams({ q: value, c: active }))
+                                            updateQuery(new URLSearchParams({ q: value, c: active }))
                                             setTop(true)
                                             setSearching(!!value)
                                             setShowClear(!!value)
