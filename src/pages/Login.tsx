@@ -123,7 +123,7 @@ export default function Login() {
                                 <div className="space-y-2">
                                     <label
                                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                        htmlFor="student-id">
+                                        htmlFor="studentId">
                                         学号
                                     </label>
                                     <input
