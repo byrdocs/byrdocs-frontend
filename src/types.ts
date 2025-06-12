@@ -42,7 +42,7 @@ export type Book = {
     filesize?: number,
 }
 
-type TestContent = '原题' | '答案'
+export type TestContent = '原题' | '答案'
 
 export type Time = {
     start: string,

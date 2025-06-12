@@ -3,11 +3,11 @@ import {
 } from "@/components/ui/card"
 
 import { Badge } from "@/components/ui/badge"
-import { Item, Test } from "@/types";
+import { Item, Test, WikiTestItem } from "@/types";
 import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Search } from "lucide-react";
+import { Copy, CopyCheck, Search } from "lucide-react";
 
 import {
     Dialog,
@@ -32,7 +32,8 @@ function Preview() {
     )
 }
 
-function ItemCard({ children, onPreview, canPreview }: { children: React.ReactNode, onPreview?: () => void, canPreview: boolean }) {
+function ItemCard({ id, children, onPreview, canPreview }: { id?: string, children: React.ReactNode, onPreview?: () => void, canPreview: boolean }) {
+    const [copied, setCopied] = useState(false);
     return (
         <Card className="w-full rounded-none md:rounded-lg shadow-sm md:hover:shadow-md transition-shadow overflow-hidden relative group/card">
             {canPreview && (
@@ -45,6 +46,48 @@ function ItemCard({ children, onPreview, canPreview }: { children: React.ReactNo
             <div className="grid grid-cols-[112.5px_1fr] md:grid-cols-[150px_1fr] min-h-[150px] md:min-h-[200px]">
                 {children}
             </div>
+            {id && 
+            <div 
+                className={cn(
+                    "bottom-1 right-1 absolute group-hover/card:opacity-100",
+                    "text-muted-foreground/20 text-xs transition-opacity",
+                    "flex flex-row items-center gap-1",
+                    {
+                        "opacity-0": !copied
+                    }
+                )}
+            >
+                {copied ? (
+                    <CopyCheck 
+                        size={11}
+                        className="transition-colors cursor-pointer text-primary"
+                    />
+                ) : (
+                    <Copy 
+                        size={11}
+                        className="transition-colors peer hover:text-muted-foreground/60 cursor-pointer"
+                        onClick={() => {
+                            navigator.clipboard.writeText(id);
+                            setCopied(true);
+                            setTimeout(() => {
+                                setCopied(false);
+                            }, 2000);
+                        }}
+                    />
+                )}
+                <a 
+                    href={`https://github.com/byrdocs/byrdocs-archive/blob/master/metadata/${id}.yml`}
+                    target="_blank"
+                    className={cn(
+                        "transition-colors hover:underline cursor-pointer hover:text-muted-foreground/60 peer-hover:text-muted-foreground/60",
+                        {
+                            "text-primary hover:text-primary": copied
+                        }
+                    )}
+                >
+                    {id.slice(0, 8)}
+                </a>
+            </div>}
         </Card>
     );
 }
@@ -169,12 +212,13 @@ function ItemTitle({ children, filename, href }: { children: React.ReactNode, fi
 }
 
 function ItemBadge(
-    { children, variant = "default", color, className }:
+    { children, variant = "default", color, className, onClick }:
         {
             children: React.ReactNode,
             variant?: "default" | "secondary",
             color?: "blue" | "orange" | "green" | "yellow" | "sky" | "rose" | "purple",
-            className?: string
+            className?: string,
+            onClick?: () => void
         }
 ) {
     return (
@@ -189,9 +233,11 @@ function ItemBadge(
                 "bg-sky-500 hover:bg-sky-500": color === "sky",
                 "bg-rose-500 hover:bg-rose-500": color === "rose",
                 "bg-purple-500 hover:bg-purple-500": color === "purple",
+                "cursor-pointer": onClick,
             }
         )}
             variant={variant}
+            onClick={onClick}
         >
             {children}
         </Badge>
@@ -241,12 +287,14 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
             }
         }
     }, [])
+    
 
     return (
         <>
             {item.type == "book" ?
                 (
                     <ItemCard
+                        id={item.id}
                         key={item.id + item.data.filetype}
                         onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
                         canPreview={item.data.filetype === "pdf"}
@@ -327,6 +375,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                 item.type == "test" ?
                     (
                         <ItemCard
+                            id={item.data.filetype === 'pdf' ? item.id : undefined}
                             key={item.id + item.data.filetype}
                             onPreview={() => onPreview(item.data.filetype === 'pdf' ?
                                 url(item.type, item.id, item.data.filetype) :
@@ -404,6 +453,7 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                     item.type == "doc" ?
                         (
                             <ItemCard
+                                id={item.id}
                                 key={item.id + item.data.filetype}
                                 onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
                                 canPreview={item.data.filetype === "pdf"}
