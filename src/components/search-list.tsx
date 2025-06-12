@@ -125,7 +125,6 @@ export function SearchList({
 
         const colleges = new Set<string>()
         const courses = new Set<string>()
-        const timeRange = new Set<string>()
         const content = new Set<string>()
         for (const item of results) {
             if (item.type === 'test') {

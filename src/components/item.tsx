@@ -3,7 +3,7 @@ import {
 } from "@/components/ui/card"
 
 import { Badge } from "@/components/ui/badge"
-import { Item, Test, WikiTestItem } from "@/types";
+import { Item, Test } from "@/types";
 import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useRef, useState } from "react";
 
