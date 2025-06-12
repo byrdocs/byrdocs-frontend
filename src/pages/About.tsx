@@ -52,9 +52,9 @@ export default function About() {
                             <A href="https://qm.qq.com/q/sxv5SAKP0A" >QQ 群</A>。
                         </li>
                     </div>
-                    <div className="w-full mt-12 text-center text-blue-500 hover:text-blue-400">
+                    <div className="w-full mt-12 text-center text-blue-500 hover:text-blue-400 cursor-pointer">
                         {idx ?
-                            <Link onClick={() => history.go(-1)} to="/about">返回</Link> :
+                            <div onClick={() => history.go(-1)} >返回</div> :
                             <Link to="/">首页</Link>
                         }
                     </div>
