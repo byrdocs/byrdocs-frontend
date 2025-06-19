@@ -191,6 +191,7 @@ function ItemTitle({ children, filename, href }: { children: React.ReactNode, fi
     let external = url.origin !== location.origin
     if (url.origin === "https://byrdocs.org") {
         url.searchParams.set("filename", filename)
+        url.searchParams.set("f", "1")
         if (!location.origin.endsWith("byrdocs-frontend.pages.dev")) {
             url.protocol = location.protocol
             url.hostname = location.hostname
