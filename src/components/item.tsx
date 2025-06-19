@@ -21,7 +21,8 @@ import 'core-js/modules/esnext.set.difference';
 
 const origin = location.hostname.endsWith("byrdocs-frontend.pages.dev") ? "https://byrdocs.org" : "";
 const url = (_type: string, md5: string, filetype: string) => `${origin}/files/${md5}.${filetype}`;
-const preview_url = (md5: string) => `${origin}/files/${md5}.webp`;
+const preview_url = (md5: string) => url("preview", md5, "pdf") + "?f=2";
+const thumbnail_url = (md5: string) => `${origin}/files/${md5}.webp`;
 
 function Preview() {
     return (
@@ -297,15 +298,15 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                     <ItemCard
                         id={item.id}
                         key={item.id + item.data.filetype}
-                        onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
+                        onPreview={() => onPreview(preview_url(item.id))}
                         canPreview={item.data.filetype === "pdf"}
                     >
                         <ItemCover
                             index={index}
-                            src={preview_url(item.id)}
+                            src={thumbnail_url(item.id)}
                             alt="书籍封面"
                             onClick={() => {
-                                openDialog(url("cover", item.id, "jpg"), preview_url(item.id));
+                                openDialog(url("cover", item.id, "jpg"), thumbnail_url(item.id));
                             }}
                         />
                         <div className={cn(
@@ -379,18 +380,18 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                             id={item.data.filetype === 'pdf' ? item.id : undefined}
                             key={item.id + item.data.filetype}
                             onPreview={() => onPreview(item.data.filetype === 'pdf' ?
-                                url(item.type, item.id, item.data.filetype) :
+                                preview_url(item.id) :
                                 item.url)}
                             canPreview={true}
                         >
                             <ItemCover
                                 index={index}
                                 src={
-                                    item.data.filetype === 'pdf' ? preview_url(item.id) : "/wiki.svg"
+                                    item.data.filetype === 'pdf' ? thumbnail_url(item.id) : "/wiki.svg"
                                 }
                                 alt="试卷封面"
                                 onClick={item.data.filetype === 'pdf' ? () => {
-                                    openDialog(url("cover", item.id, "jpg"), preview_url(item.id));
+                                    openDialog(url("cover", item.id, "jpg"), thumbnail_url(item.id));
                                 } : item.url}
                                 external={item.data.filetype !== 'pdf'}
                             />
@@ -456,15 +457,15 @@ export const ItemDisplay: React.FC<{ item: Item, index?: number, onPreview: (url
                             <ItemCard
                                 id={item.id}
                                 key={item.id + item.data.filetype}
-                                onPreview={() => onPreview(url(item.type, item.id, item.data.filetype))}
+                                onPreview={() => onPreview(preview_url(item.id))}
                                 canPreview={item.data.filetype === "pdf"}
                             >
                                 <ItemCover
                                     index={index}
-                                    src={ preview_url(item.id)}
+                                    src={ thumbnail_url(item.id)}
                                     alt="资料封面"
                                     onClick={() => {
-                                        openDialog(url("cover", item.id, "jpg"), preview_url(item.id));
+                                        openDialog(url("cover", item.id, "jpg"), thumbnail_url(item.id));
                                     }}
                                 />
                                 <div className="p-2 md:p-4 space-y-1 md:space-y-2">
