@@ -36,9 +36,12 @@ export default function Login() {
             })
             const data = await res.json()
             if (!data.success) throw new Error(data.error)
-            setToken(data.token)
+            if (data.token) setToken(data.token)
             if (service === 'byrdocs' && data.data) {
                 location.href = data.data
+            }
+            if (data.redirect) {
+                location.href = data.redirect
             }
         } catch (e) {
             setErrorMsg((e as Error).message || "登录失败")
@@ -105,7 +108,7 @@ export default function Login() {
                     <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
                 </Link>
                 <div className="text-center text-2xl md:text-3xl font-bold " style={{ lineHeight: 3 }}>
-                    登录 <code>byrdocs-cli</code>
+                    登录 <code>{service}</code>
                 </div>
                 {!showDetail ?
                     <div className={"w-full sm:w-[500px] mx-auto p-4 -mt-8"}>

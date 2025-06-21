@@ -32,7 +32,7 @@ export default function Component() {
                     <AuthOption
                         icon={<Github className="w-6 h-6 dark:text-white" />}
                         title="GitHub 认证"
-                        description='仅限 byrdocs GitHub 组织成员使用'
+                        description='仅限 BYR Docs GitHub 组织成员使用'
                         to={`/api/auth/github/${arg.uuid}`}
                         external={true}
                     />
