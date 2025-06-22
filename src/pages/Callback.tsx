@@ -35,6 +35,9 @@ export default function Callback() {
                     if (service === 'byrdocs' && res.data) {
                         window.location.href = res.data
                     }
+                    if (res.redirect) {
+                        window.location.href = res.redirect
+                    }
                 } else {
                     setError(res.error);
                 }
