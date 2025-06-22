@@ -1,5 +1,5 @@
 import { FormEvent, PropsWithChildren, useState } from "react"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, ArrowLeft } from "lucide-react"
 import { Link, useParams } from "react-router-dom"
 import { toast } from 'sonner';
 import {
@@ -104,6 +104,15 @@ export default function Login() {
     return (
         <>
             <div className="flex flex-col items-center justify-center min-h-screen bg-background pt-12">
+                <div className="w-full max-w-md p-3">
+                    <Link
+                        to={"/auth/" + arg.uuid + "/" + service}
+                        className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex items-center gap-1 hover:-translate-x-1 transition-all duration-300"
+                    >
+                        <ArrowLeft className="w-4 h-4 inline-block mt-[2px]" />
+                        <span>返回</span>
+                    </Link>
+                </div>
                 <Link to="/">
                     <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
                 </Link>
