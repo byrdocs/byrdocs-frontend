@@ -48,11 +48,12 @@ function initItem(item: Item) {
 export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: boolean) => void }) {
     const [query, setQuery] = useSearchParams()
     const q = query.get("q") || ""
+    const type = query.get("c") || ""
     const [top, setTop] = useState(false)
     const input = useRef<HTMLInputElement>(null)
     const [showClear, setShowClear] = useState(q !== "")
     const showedTip = useRef(false)
-    const [active, setActive] = useState<CategoryType>(query.get("c") as CategoryType ?? 'all')
+    const [active, setActive] = useState<CategoryType>(type as CategoryType ?? 'all')
     const [inputFixed, setInputFixed] = useState(false)
     const relative = useRef<HTMLDivElement>(null)
     const navigate = useNavigate()
@@ -101,7 +102,12 @@ export function Search({ onPreview: onLayoutPreview }: { onPreview: (preview: bo
             setKeyword("")
             setSearching(false)
         }
-    }, [q])
+        if (type) {
+            setActive(type as CategoryType)
+        } else {
+            setActive("all")
+        }
+    }, [q, type])
 
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent) {
