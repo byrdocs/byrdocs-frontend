@@ -23,12 +23,15 @@ export default function Component() {
                     登录 <code>{service}</code>
                 </div>
                 <div className="space-y-4">
-                    <AuthOption
-                        icon={<Key className="w-6 h-6 dark:text-white" />}
-                        title="北京邮电大学统一认证"
-                        description='适用于校内用户的便捷认证方式'
-                        to={`/login/${arg.uuid}/${service ?? ''}`}
-                    />
+                    {service !== "byrdocs-publish" && (
+                        <AuthOption
+                            icon={<Key className="w-6 h-6 dark:text-white" />}
+                            title="北京邮电大学统一认证"
+                            description='适用于校内用户的便捷认证方式'
+                            to={`/login/${arg.uuid}/${service ?? ''}`}
+                        />
+                    )}
+                    
                     <AuthOption
                         icon={<Github className="w-6 h-6 dark:text-white" />}
                         title="GitHub 认证"
