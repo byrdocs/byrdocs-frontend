@@ -19,7 +19,6 @@ import { EnlargeIcon, ExternalIcon } from "./icons";
 
 import 'core-js/modules/esnext.set.difference';
 import { Link } from "react-router-dom";
-import { Button } from "./ui/button";
 
 const origin = location.hostname.endsWith("byrdocs-frontend.pages.dev") ? "https://byrdocs.org" : "";
 const url = (_type: string, md5: string, filetype: string) => `${origin}/files/${md5}.${filetype}`;
