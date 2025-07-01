@@ -7,7 +7,7 @@ import { Item, Test } from "@/types";
 import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Copy, CopyCheck, Search } from "lucide-react";
+import { Copy, CopyCheck, Edit, Search } from "lucide-react";
 
 import {
     Dialog,
@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import { EnlargeIcon, ExternalIcon } from "./icons";
 
 import 'core-js/modules/esnext.set.difference';
+import { Link } from "react-router-dom";
+import { Button } from "./ui/button";
 
 const origin = location.hostname.endsWith("byrdocs-frontend.pages.dev") ? "https://byrdocs.org" : "";
 const url = (_type: string, md5: string, filetype: string) => `${origin}/files/${md5}.${filetype}`;
@@ -57,28 +59,36 @@ function ItemCard({ id, children, onPreview, canPreview }: { id?: string, childr
                         "opacity-0": !copied
                     }
                 )}
-            >
+            >   
+                <Link to={`https://publish.byrdocs.org/edit/${id}`} title="编辑此文件的元信息">
+                    <Edit size={11} className="transition-colors cursor-pointer hover:text-muted-foreground/60" />
+                </Link>
+                <div className="inline-block mx-1 border-l-[0.5px] h-3"></div>
                 {copied ? (
                     <CopyCheck 
                         size={11}
                         className="transition-colors cursor-pointer text-primary"
                     />
                 ) : (
-                    <Copy 
-                        size={11}
-                        className="transition-colors peer hover:text-muted-foreground/60 cursor-pointer"
-                        onClick={() => {
-                            navigator.clipboard.writeText(id);
-                            setCopied(true);
-                            setTimeout(() => {
-                                setCopied(false);
-                            }, 2000);
-                        }}
-                    />
+                    <div title="复制文件 md5">
+                        <Copy 
+                            size={11}
+                            xlinkTitle="123"
+                            className="transition-colors peer hover:text-muted-foreground/60 cursor-pointer"
+                            onClick={() => {
+                                navigator.clipboard.writeText(id);
+                                setCopied(true);
+                                setTimeout(() => {
+                                    setCopied(false);
+                                }, 2000);
+                            }}
+                        />
+                    </div>
                 )}
-                <a 
-                    href={`https://github.com/byrdocs/byrdocs-archive/blob/master/metadata/${id}.yml`}
+                <Link 
+                    to={`https://github.com/byrdocs/byrdocs-archive/blob/master/metadata/${id}.yml`}
                     target="_blank"
+                    title="查看此文件在 GitHub 上的元信息"
                     className={cn(
                         "transition-colors hover:underline cursor-pointer hover:text-muted-foreground/60 peer-hover:text-muted-foreground/60",
                         {
@@ -87,7 +97,7 @@ function ItemCard({ id, children, onPreview, canPreview }: { id?: string, childr
                     )}
                 >
                     {id.slice(0, 8)}
-                </a>
+                </Link>
             </div>}
         </Card>
     );
