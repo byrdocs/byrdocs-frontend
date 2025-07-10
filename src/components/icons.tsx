@@ -9,7 +9,7 @@ export function LoadingIcon({ className }: { className?: string }) {
       className={cn("animate-spin w-20 h-20 mx-auto select-none", className)}
     >
       <g className="loading_spinner">
-        <circle cx="12" cy="12" r="9.5" fill="none" stroke-width="1"></circle>
+        <circle cx="12" cy="12" r="9.5" fill="none" strokeWidth="1"></circle>
       </g>
     </svg>
   );
