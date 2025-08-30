@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function BuildInfo() {
     const date = new Date(import.meta.env.VITE_GIT_COMMIT_DATE);
     return (
-        <footer className="mx-auto text-[8px] md:text-xs h-6">
+        <footer className="mx-auto text-xs h-6">
             <div className="text-muted-foreground mt-4 text-center w-[100vw] group">
                 <div className="space-x-1 px-6">
                     <span className="text-muted-foreground/50 group-hover:text-muted-foreground">{date.toLocaleString()}</span>
@@ -30,7 +30,7 @@ export default function About() {
     const idx = history.state.idx || 0;
     return (
         <>
-            <div className="md:w-[800px] w-full md:m-auto px-10 flex flex-col md:min-h-[calc(100vh-48px)] min-h-[calc(100vh-24px)]">
+            <div className="md:w-[800px] w-full md:m-auto px-10 flex flex-col min-h-[calc(100dvh-48px)]">
                 <div className="w-full m-auto h-98">
                     <div className="text-center my-12" style={{ lineHeight: 3 }}>
                         <span className="text-4xl sm:text-5xl md:text-6xl">关于</span>

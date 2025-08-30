@@ -10,7 +10,7 @@ import { Banner } from "@/config";
 function App() {
   const [preview, setPreview] = useState(false);
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-dvh">
       <Banner className={cn({
             "w-[60vw]": preview
             },

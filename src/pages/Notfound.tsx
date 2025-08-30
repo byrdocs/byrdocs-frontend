@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function Notfound() {
 
     return (
-        <div className="md:w-[800px] w-full md:m-auto px-5 flex flex-col h-[100vh]">
+        <div className="md:w-[800px] w-full md:m-auto px-5 flex flex-col h-dvh">
             <div className="w-full m-auto h-98">
                 <div className="text-center mb-12">
                     <span className="text-4xl sm:text-5xl md:text-6xl font-extrabold">404</span>

@@ -14,7 +14,7 @@ export default function Component() {
     const arg = useParams()
     const service = arg.service || 'byrdocs'
     return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="flex items-center justify-center min-h-dvh bg-background">
             <div className="w-full max-w-md p-6">
                 <Link to="/">
                     <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
