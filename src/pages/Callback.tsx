@@ -57,7 +57,7 @@ export default function Callback() {
 
     return (
         <>
-            <div className="flex flex-col items-center justify-center min-h-screen bg-background md:w-[500px] w-full md:m-auto px-10">
+            <div className="flex flex-col items-center justify-center min-h-dvh bg-background md:w-[500px] w-full md:m-auto px-10">
                 <div className="w-full m-auto">
                     <Link to="/">
                         <img src="/logo_512.png" alt="logo" className="w-24 h-24 mx-auto" />
